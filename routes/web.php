@@ -16,5 +16,13 @@
 // });
 
 Route::get('/', 'PagesController@root')->name('root');
+Route::group(['middleware'=>'auth'], function(){
+    Route::get('email_verify_notice', 'PagesController@emailVerifyNotice')->name('email_verify_notice');
+    Route::group(['middleware'=>'email_verify'], function () {
+        Route::get('test', function (){
+            return 'your email is verified ';
+        });
+    });
+});
 
 Auth::routes();

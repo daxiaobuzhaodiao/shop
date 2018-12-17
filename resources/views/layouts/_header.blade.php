@@ -28,5 +28,4 @@
         @endguest
         </div>
     </div>
-   
 </header>
