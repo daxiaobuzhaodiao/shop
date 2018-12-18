@@ -4,11 +4,12 @@
 
 @section('content')
 
-    <div class="alert alert-warning text-center col-6 m-auto" role="alert"> 
-        <p class="alert-heading">提示 !</p>
+    <div class="alert alert-warning text-center col-6 mx-auto" role="alert"> 
+        <h5 class="alert-heading">提示 !</h5>
         <hr>
         <h5>请验证邮箱后再来~~</h5>
-        <a href="/">去首页</a>
+        <hr>
+        <a class="btn btn-primary" href="{{ route('email_verification.send') }}">没收到？重新发送验证邮件！</a>
     </div>
 
 @endsection
