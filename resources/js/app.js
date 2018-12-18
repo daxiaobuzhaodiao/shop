@@ -6,3 +6,10 @@
  */
 
 require('./bootstrap');
+
+window.Vue = require('vue');
+require('./components/selectDistrict');
+require('./components/UserAddressesCreateAndEdit');
+const App = new Vue({
+    el: '#app',
+})

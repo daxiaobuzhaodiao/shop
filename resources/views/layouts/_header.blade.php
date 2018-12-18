@@ -15,14 +15,14 @@
             <a class="btn btn-sm btn-outline-secondary" href="{{ route('register') }}">注册</a>
         @else
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span><img src="thumbs/default.jpg" alt="" style="width:40px; height:40px; border-radius:50%"></span>&nbsp;
+                <span><img src="/thumbs/default.jpg" alt="" style="width:40px; height:40px; border-radius:50%"></span>&nbsp;
                 {{ auth()->user()->name }}
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                         {{ csrf_field() }}
                 </form>
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="{{ route('address') }}">收获地址</a>
+                <a class="dropdown-item" href="{{ route('user_address.index') }}">收获地址</a>
                 <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit()">退出登陆</a>
             </div>
         @endguest
