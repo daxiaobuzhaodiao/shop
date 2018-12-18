@@ -20,8 +20,9 @@ Route::group(['middleware'=>'auth'], function(){
     Route::get('email_verify_notice', 'PagesController@emailVerifyNotice')->name('email_verify_notice');    // 提醒用户去验证邮箱
     Route::get('email_verification/verify', 'EmailVerificationController@verify')->name('email_verification.verify');   //验证url地址
     Route::get('email_verification/send', 'PagesController@send')->name('email_verification.send'); //用户主动验证邮箱
-    Route::group(['middleware'=>'email_verify'], function (){
-
-    });
+    
+});
+Route::group(['middleware' => 'email_verify'], function () {
+    Route::get('user_address', 'UserAddressController@index')->name('address');
 });
 
