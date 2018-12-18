@@ -6,6 +6,7 @@ use App\Models\User;
 use Cache;
 use Illuminate\Http\Request;
 use TheSeer\Tokenizer\Exception;
+use App\Exceptions\InvalidRequestException;
 
 class EmailVerificationController extends Controller
 {
@@ -15,15 +16,15 @@ class EmailVerificationController extends Controller
         $token = $request->token;
         // 如果有一个为空 则直接抛出异常
         if(!$email || !$token){
-            throw new Exception('验证链接有误！！');
+            throw new InvalidRequestException('验证链接有误！！');
         }
         // 将缓存中的token和url中的token做对比 如果不匹配，抛出异常
         if($token != Cache::get('verification_'.$email)){
-            throw new Exception('验证链接有误或者已过期');
+            throw new InvalidRequestException('验证链接有误或者已过期');
         }
         // 通常来说通过验证的用户 在数据库中是存在的，但是为了代码健壮性进行以下判断
         if(auth()->user() != User::where('email', $email)->first()){
-            throw new Exception('用户不存在');
+            throw new InvalidRequestException('用户不存在');
         }
         // 完成验证，将缓存中的token删除掉
         Cache::forget('verification_'.$email);
