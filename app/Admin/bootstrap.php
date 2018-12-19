@@ -18,4 +18,5 @@
  *
  */
 
-Encore\Admin\Form::forget(['map', 'editor']);
+// Encore\Admin\Form::forget(['map', 'editor']); // 默认禁止使用editor
+Encore\Admin\Form::forget(['map']);

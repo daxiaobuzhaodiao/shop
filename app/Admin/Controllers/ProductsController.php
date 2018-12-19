@@ -53,7 +53,7 @@ class ProductsController extends Controller
     public function edit($id, Content $content)
     {
         return $content
-            ->header('Edit')
+            ->header('编辑商品')
             ->description('description')
             ->body($this->form()->edit($id));
     }
@@ -67,7 +67,7 @@ class ProductsController extends Controller
     public function create(Content $content)
     {
         return $content
-            ->header('Create')
+            ->header('添加商品')
             ->description('description')
             ->body($this->form());
     }
@@ -84,7 +84,7 @@ class ProductsController extends Controller
         $grid->id('Id')->sortable();
         $grid->title('商品名称');
         // $grid->description('商品详情');
-        $grid->image('商品图片');
+        // $grid->image('商品图片');
         $grid->on_sale('已上架')->display(function ($value){
             return $value? '是' : '否';
         });
@@ -141,17 +141,32 @@ class ProductsController extends Controller
      */
     protected function form()
     {
+        // 创建一个表单
         $form = new Form(new Product);
+        // 创建一个输入框，第一个参数 title 是模型的字段名，第二个参数是该字段描述
+        $form->text('title', '商品名称')->rules('required');
+        // $form->textarea('description', 'Description');
+        // 创建富文本编辑器
+        $form->editor('description', '商品描述')->rules('required');
+        $form->image('image', '商品图片')->rules('required|image');
 
-        $form->text('title', 'Title');
-        $form->textarea('description', 'Description');
-        $form->image('image', 'Image');
-        $form->switch('on_sale', 'On sale')->default(1);
-        $form->decimal('rating', 'Rating')->default(5.00);
-        $form->number('sold_count', 'Sold count');
-        $form->number('review_count', 'Review count');
-        $form->decimal('price', 'Price');
-
+        $form->switch('on_sale', '上架')->default(0);
+        
+        $form->decimal('rating', '综合评分')->default(5.00);
+        $form->number('sold_count', '销量');
+        $form->number('review_count', '评论数');
+        // $form->decimal('price', '价格');  // 这个在sku里面填写
+        //直接添加一对多的关联模型
+        $form->hasMany('sku', 'SKU 列表', function (Form\NestedForm $form) {
+            $form->text('title', 'SKU 名称')->rules('required');
+            $form->text('description', 'SKU 描述')->rules('required');
+            $form->text('price', '单价')->rules('required|numeric|min:0.01');
+            $form->text('stock', '剩余库存')->rules('required|integer|min:0');
+        });
+        // 定义事件回调，当模型即将保存时会触发这个回调
+        $form->saving(function (Form $form) {
+            $form->model()->price = collect($form->input('sku'))->where(Form::REMOVE_FLAG_NAME, 0)->min('price') ?: 0;
+        });
         return $form;
     }
 }
