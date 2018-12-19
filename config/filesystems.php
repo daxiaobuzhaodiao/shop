@@ -63,7 +63,13 @@ return [
             'bucket' => env('AWS_BUCKET'),
             'url' => env('AWS_URL'),
         ],
-
+        // Disk [admin] not configured, please add a disk config in `config/filesystems.php`
+        // laravel-admin 添加以下数组否则报错
+        'admin' => [
+            'driver'     => 'local',
+            'root'       => public_path('upload'),
+            'visibility' => 'public',
+            'url' => env('APP_URL').'/public/upload/',
+        ]
     ],
-
 ];
