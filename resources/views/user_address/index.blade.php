@@ -26,14 +26,12 @@
                             <td>{{ $address->contact_phone }}</td>
                             <td>
                                 <div class="form-inline">
-                                {!! Form::open(['route'=>['user_address.edit', $address->id]]) !!}
-                                    <button class="btn btn-sm btn-info mr-2">修改</button>
+                                {!! Form::open(['route'=>['user_address.edit', $address->id], 'method'=>'get']) !!}
+                                    {!! Form::submit('修改', ['class'=>'btn btn-sm btn-info mr-2']) !!}
                                 {!! Form::close() !!}
-                                {!! Form::open(['route'=>['user_address.destroy', $address->id], 'method'=>'DELETE']) !!}
-                                    {!! Form::submit('删除', ['class'=>'btn btn-sm btn-danger']) !!}
-                                {!! Form::close() !!}
-                                </div>
 
+                                <button class="btn btn-sm btn-danger del-address" data-id="{{ $address->id }}">删除</button>
+                                </div>
                             </td>
                         </tr>
                     @endforeach
@@ -41,4 +39,51 @@
             </table>
         </div> 
     </div>
+@endsection
+
+@section('customJS')
+    <script>
+        $(document).ready(function (){
+            $('.del-address').click(function (){
+                let id = $(this).data('id');
+                // 下方是sweetalert2 代码
+                const swalWithBootstrapButtons = Swal.mixin({
+                confirmButtonClass: 'btn btn-success',
+                cancelButtonClass: 'btn btn-danger mr-5',
+                buttonsStyling: false,
+                })
+
+                swalWithBootstrapButtons({
+                title: '您确定么?',
+                text: "一旦删除将不会被恢复!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: '是，确定!',
+                cancelButtonText: '不，取消!',
+                reverseButtons: true
+                }).then((result) => {
+                // console.log(result.value);  // 确定返回true  取消无返回
+                    if (result.value) {
+                        axios.delete( '/user_address/' + id ).then((res)=>{
+                            swalWithBootstrapButtons(
+                                '已删除',
+                                '您的收获地址已删除',
+                                'success'
+                            ).then(()=>{
+                                // 确定后就 刷新页面
+                                window.location.reload();
+                            })
+                        })
+                      
+                    } else {
+                        swalWithBootstrapButtons(
+                            '已取消',
+                            '您的收获地址很安全 :)',
+                            'error'
+                        )
+                    }
+                })
+            })
+        })
+    </script>
 @endsection

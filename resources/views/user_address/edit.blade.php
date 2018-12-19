@@ -1,17 +1,17 @@
 @extends('layouts.app')
-@section('title', '添加收货地址')
+@section('title', '修改收货地址')
 
 @section('content')
     <div class="card mb-3 mx-auto" style="width:50rem">
-        <div class="card-header text-center"><h3>添加收货地址</h3></div>
+        <div class="card-header text-center"><h3>修改收货地址</h3></div>
         <div class="card-body">
             <!-- 输出后端报错开始 -->
             @include('user_address._error')
             <!-- 输出后端报错结束 -->
             <!-- inline-template 代表通过内联方式引入组件 -->
             <user-addresses-create-and-edit inline-template>
-                {!! Form::open(['route'=>'user_address.store', 'method'=>'POST']) !!}
-                    <select-district @change="onDistrictChanged" inline-template>
+                {!! Form::model($address,['route'=>['user_address.update', $address->id], 'method'=>'PUT']) !!}
+                    <select-district :init-value="{{ json_encode([$address->province, $address->city, $address->district]) }}" @change="onDistrictChanged" inline-template>
                     @include('user_address._sanjiliandong')
                     <!-- 插入了 3 个隐藏的字段 -->
                     <!-- 通过 v-model 与 user-addresses-create-and-edit 组件里的值关联起来 -->
