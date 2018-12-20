@@ -3,7 +3,7 @@
 
 @section('content')
 <div class="row">
-<div class="col-lg-10 col-lg-offset-1">
+<div class="col-lg-10 m-auto">
 <div class="panel panel-default">
   <div class="panel-body product-info">
     <div class="row">
@@ -26,7 +26,7 @@
                 class="btn btn-default sku-btn mr-1 border"
                 data-price="{{ $sku->price }}"
                 data-stock="{{ $sku->stock }}"
-                data-toggle="tooltip"
+                {{-- data-toggle="tooltip" --}}
                 title="{{ $sku->description }}"
                 data-placement="bottom">
                 <input style="display:none" type="radio" name="skus" autocomplete="off" value="{{ $sku->id }}"> {{ $sku->title }}
@@ -36,7 +36,11 @@
         </div>
         <div class="cart_amount"><label>数量</label><input type="text" class="form-control input-sm" value="1"><span>件</span><span class="stock"></span></div>
         <div class="buttons">
+          @if($favored)
+          <button class="btn btn-success btn-disfavor">取消收藏</button>
+          @else
           <button class="btn btn-success btn-favor">❤ 收藏</button>
+          @endif
           <button class="btn btn-primary btn-add-to-cart">加入购物车</button>
         </div>
       </div>
@@ -67,9 +71,44 @@
         $(document).ready(function () {
             // $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
             $('.sku-btn').click(function () {
-            $('.product-info .price span').text($(this).data('price'));
-            $('.product-info .stock').text('库存：' + $(this).data('stock') + '件');
+              $('.product-info .price span').text($(this).data('price'));
+              $('.product-info .stock').text('库存：' + $(this).data('stock') + '件');
             });
+
+            // 收藏商品
+            $('.btn-favor').click(function (){
+              axios.post('{{ route('product.favorite', $product->id) }}')
+                .then(function (res){
+                  // 代码进到这里表示请求成功
+                  Swal('', '收藏成功', 'success')
+                    .then(function (){
+                      document.location.reload();
+                    })
+                }).catch(function (err){
+                  console.log(err.response.data);
+                  if(err.response.status == 401){
+                    Swal('', '请先登录', 'warning');
+                  }else if(err.response.data.msg){
+                    Swal('', err.response.data.msg, 'warning')
+                  }else{
+                    Swal('','未知错误，请稍后再试', 'warning')
+                  }
+                })
+            })
+
+            // 取消收藏
+            $('.btn-disfavor').click(function (){
+              axios.delete('{{ route('product.disfavorite', $product->id) }}')
+                .then(function (res){
+                  Swal('','取消成功', 'success')
+                    .then(function () {
+                      document.location.reload();
+                    })
+                }).catch(function (err){
+                  console.log(err.response);
+                  
+                })
+            })
         });
     </script>
 @endsection

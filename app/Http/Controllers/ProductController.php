@@ -6,8 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Exceptions\InvalidRequestException;
 
-class ProductsController extends Controller
+class ProductController extends Controller
 {
+    // 商品列表
     public function index(Request $request){
         // 创建查询构造器
         $builder = Product::query()->where('on_sale', true);
@@ -48,12 +49,46 @@ class ProductsController extends Controller
         ]);
     }
 
+    // 商品详情页
     public function show(Product $product, Request $request)
     {
         // 判断商品是否已上架
         if(!$product->on_sale){
             throw new InvalidRequestException('该商品未上架');
         }
-        return view('products.show',compact('product'));
+        
+        $favored = false;
+        if($user = auth()->user()){
+            $res = $user->favoriteProducts()->find($product->id);  //如果找到就返回这个商品对象！如果找不到返回null  null转换为boolean为false
+            $favored = boolval($res);
+        }
+        return view('products.show',compact('product', 'favored'));
+    }
+
+    // 收藏商品
+    public function favorite(Product $product){
+        $user = auth()->user();
+        
+        if($user->favoriteProducts()->find($product->id)) {
+            // 用户已经收藏过了  也不用提醒直接返回空就行
+            return [];
+        }
+        //attach() 方法将当前用户和此商品关联起来 参数可以是模型的 id，也可以是模型对象本身
+        $user->favoriteProducts()->attach($product);
+        return [];
+    }
+
+    // 取消收藏
+    public function disfavorite(Product $product){
+        $user = auth()->user();
+        $user->favoriteProducts()->detach($product);  // 此方法和上方的attach方法类似取消用户和商品的关联
+        return [];
+    }
+
+    // 返回我的收藏列表
+    public function favorites(){
+        // 在User模型中关联了收藏的表时已经设置过排序
+        $products = auth()->user()->favoriteProducts()->paginate(8);
+        return view('products.favorites', compact('products'));
     }
 }

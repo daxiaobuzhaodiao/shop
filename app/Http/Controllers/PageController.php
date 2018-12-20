@@ -8,7 +8,7 @@ use App\Notifications\EmailVerificationNotification;
 use App\Exceptions\InvalidRequestException;
 
 
-class PagesController extends Controller
+class PageController extends Controller
 {
     public function root(){
         return view('pages.root');
