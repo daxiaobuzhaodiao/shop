@@ -13,7 +13,8 @@
 
 Auth::routes();
 
-Route::get('/', 'PagesController@root')->name('root');
+Route::redirect('/', '/products')->name('root');
+Route::get('products', 'ProductsController@index')->name('products.index');
 
 // 邮箱验证
 Route::group(['middleware'=>'auth'], function(){
@@ -24,5 +25,7 @@ Route::group(['middleware'=>'auth'], function(){
         Route::resource('user_address', 'UserAddressController');
     });
 });
+
+
 
 

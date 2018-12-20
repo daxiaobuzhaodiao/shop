@@ -96,7 +96,7 @@ class ProductsController extends Controller
         // $grid->updated_at('修改日期');
         $grid->actions(function ($actions) {
             $actions->disableView();    // 不显示查看
-            $actions->disableDelete();  // 不显示删除
+            // $actions->disableDelete();  // 不显示删除
         });
 
         $grid->tools(function ($tools) {
