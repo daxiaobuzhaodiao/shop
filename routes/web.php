@@ -14,7 +14,7 @@
 Auth::routes();
 
 Route::redirect('/', '/products')->name('root');
-Route::get('products', 'ProductsController@index')->name('products.index');
+Route::resource('products', 'ProductsController');
 
 // 邮箱验证
 Route::group(['middleware'=>'auth'], function(){

@@ -28,7 +28,7 @@
         @foreach($products as $product)
             <div class="card-deck col-md-3 col-sm-4 mb-3 p-0 m-0">
                 <div class="card p-1">
-                    <img class="card-img-top border" src="{{ $product->image_url }}" alt="Card image cap">
+                    <a href="{{ route('products.show', $product->id) }}"><img class="card-img-top border" src="{{ $product->image_url }}" alt="Card image cap"></a>
                     <div class="col card-body px-3 py-0">
                         <div class="col">
                             <div><b>$</b>{{ $product->price }}</div>
