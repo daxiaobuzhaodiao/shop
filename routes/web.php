@@ -26,7 +26,7 @@ Route::group(['middleware'=>'auth'], function(){
         Route::post('product/{product}/favorite', 'ProductController@favorite')->name('product.favorite');
         Route::delete('product/{product}/disfavorite', 'ProductController@disfavorite')->name('product.disfavorite');
         Route::get('product/favorites/list', 'ProductController@favorites')->name('product.favorites');
-        Route::post('cart/add', 'CartController@add')->name('cart.add');
+        Route::resource('cart', 'CartController');
     });
 });
 

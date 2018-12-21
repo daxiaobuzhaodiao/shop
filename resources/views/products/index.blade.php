@@ -30,7 +30,7 @@
 
 @section('customJS')
     <script>
-        // Unexpected token & 报错  需要使用下面的方式哦~~~
+        // 注意 Unexpected token & 报错
         var filters =  {!! json_encode($filters) !!}
         $(document).ready(function (){
             $('.search-form input[name=search]').val(filters.search);

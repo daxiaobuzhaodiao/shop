@@ -14,11 +14,13 @@
             <a class="btn btn-sm btn-outline-secondary mr-3" href="{{ route('login') }}">登陆</a>
             <a class="btn btn-sm btn-outline-secondary" href="{{ route('register') }}">注册</a>
         @else
+            <a href="{{ route('cart.index') }}"><i class="fa fa-shopping-cart fa-lg" aria-hidden="true"></i></a>
+            
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span><img src="/thumbs/default.jpg" alt="" style="width:40px; height:40px; border-radius:50%"></span>&nbsp;
                 {{ auth()->user()->name }}
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                        {{ csrf_field() }}
+                    {{ csrf_field() }}
                 </form>
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">

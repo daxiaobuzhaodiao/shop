@@ -9,6 +9,9 @@
     <title>@yield('title', 'Laravel Shop') - Laravel 电商教程</title>
     <!-- 样式 -->
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ asset('font-awesome/css/font-awesome.min.css') }}">
+
 </head>
 <body>
     <!-- helper function -->

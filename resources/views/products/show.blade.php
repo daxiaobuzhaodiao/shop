@@ -113,11 +113,14 @@
 
             // 加入购物车 
             $('.btn-add-to-cart').click(function () {
-              axios.post('{{ route('cart.add') }}', {
+              axios.post('{{ route('cart.store') }}', {
                 'sku_id': $('label.active input[name=skus]').val(),
                 'amount': $('.cart_amount input').val()
               }).then(function(res){
-                  Swal('', '成功加入购物车', 'success');
+                  Swal('', '成功加入购物车', 'success')
+                    .then(function(){
+                      document.location.href = '{{ route('cart.index') }}';
+                    })
               }).catch(function (err){
                 if(err.response.status == 401){
                   Swal('', '请先登录', 'warning');

@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\ProductSku;
 
 class Cart extends Model
 {
     protected $fillable = [
-        'amount', 'sku_id', 'user_id'
+        'amount'
     ];
 
     // 不需要维护时间的两个字段  注意关键字是 public
@@ -18,6 +19,6 @@ class Cart extends Model
     }
 
     public function productSku(){
-        return $this->belongsTo('App\Models\ProductSku');
+        return $this->belongsTo(ProductSku::class);
     }
 }
