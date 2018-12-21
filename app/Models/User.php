@@ -38,4 +38,8 @@ class User extends Authenticatable
             ->withTimestamps()
             ->orderBy('user_favorite_products.created_at', 'desc');
     }
+
+    public function cart(){
+        return $this->hasMany('App\Models\Cart');
+    }
 }

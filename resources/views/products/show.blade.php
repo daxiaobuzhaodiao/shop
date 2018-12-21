@@ -69,8 +69,9 @@
 @section('customJS')
     <script>
         $(document).ready(function () {
-            // $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
+            // $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'}); // 不好看所以不给显示了
             $('.sku-btn').click(function () {
+              // alert($(this).data('price'));
               $('.product-info .price span').text($(this).data('price'));
               $('.product-info .stock').text('库存：' + $(this).data('stock') + '件');
             });
@@ -105,9 +106,35 @@
                       document.location.reload();
                     })
                 }).catch(function (err){
-                  console.log(err.response);
+                  // console.log(err.response);
                   
                 })
+            })
+
+            // 加入购物车 
+            $('.btn-add-to-cart').click(function () {
+              axios.post('{{ route('cart.add') }}', {
+                'sku_id': $('label.active input[name=skus]').val(),
+                'amount': $('.cart_amount input').val()
+              }).then(function(res){
+                  Swal('', '成功加入购物车', 'success');
+              }).catch(function (err){
+                if(err.response.status == 401){
+                  Swal('', '请先登录', 'warning');
+                }else if(err.response.status == 422){
+                  let html = '<div>';
+                  $.each(err.response.data.errors, function(index, value){
+                    html += value[0] + '<br/>';
+                  })
+                  html+='</div>';
+                  Swal({
+                    type: 'error',
+                    title: html,
+                  })
+                }else{
+                  Swal('', '系统错误，请联系客服', 'warning');
+                }
+              })
             })
         });
     </script>
