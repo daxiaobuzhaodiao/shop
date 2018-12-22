@@ -11,8 +11,9 @@ class CartController extends Controller
 {
     // 购物车列表
     public function index(){
+        $addresses = auth()->user()->address()->orderBy('last_used_at', 'desc')->get();
         $cartItems = auth()->user()->cart()->with(['productSku.product'])->get();
-        return view('carts.index', compact('cartItems'));
+        return view('carts.index', compact('cartItems', 'addresses'));
     }
 
     // 添加购物车

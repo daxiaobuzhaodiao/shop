@@ -5,10 +5,10 @@
 @section('content')
 <div class="row">
 <div class="col-lg-10 mx-auto">
-<div class="panel panel-default">
-  <div class="panel-heading"><h4>我的购物车</h4></div>
-  <div class="panel-body">
-    <table class="table table-striped">
+<div class="card card-default">
+  <div class="card-header text-center"><h4>我的购物车</h4></div>
+  <div class="card-body">
+    <table class="table table-hover">
       <thead>
       <tr>
         <th><input type="checkbox" id="select-all"></th>
@@ -51,6 +51,27 @@
       @endforeach
       </tbody>
     </table>
+    <!-- 分页 -->
+    {{-- <div>{{ $cartItems->render() }}</div> --}}
+    <hr>
+    <!-- 选择收获地址 -->
+      <form id="order-form">
+      <div class="form-group">
+        <label>收获地址</label>
+        <select class="custom-select" name="address">
+          @foreach ($addresses as $address)
+            <option value="{{ $address->id }}">{{ $address->getFullAddress() }} {{ $address->contact_name }} {{ $address->contact_phone }}</option>
+          @endforeach
+        </select>
+      </div>
+      <div class="form-group">
+        <label>备注</label>
+        <textarea class="form-control" name="remark" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <button class="btn btn-primary btn-create-order">提交订单</button>
+      </div>
+    </form>
   </div>
 </div>
 </div>
@@ -60,7 +81,7 @@
 @section('customJS')
     <script>
         $(document).ready(function () {
-            // 监听 移除 按钮的点击事件
+            // 删除购车车
             $('.btn-remove').click(function () {
               // closest() 方法可以获取到匹配选择器的第一个祖先元素，在这里就是当前点击的 移除 按钮之上的 <tr> 标签
               var id = $(this).closest('tr').data('id');
@@ -92,6 +113,55 @@
                 $(this).prop('checked', checked); 
               });
             });
+
+              // 声称订单
+              $('.btn-create-order').click(function () {
+                // 构建请求参数
+                var req = {
+                  address_id: $('#order-form').find('select[name=address]').val(),  // 收货地址
+                  items: [],      // sku_id 和 amount
+                  remark: $('#order-form').find('textarea[name=remark]').val(), // 备注
+                };
+                // 获得参数中的 items[] 这个数组的数据
+                $('table tr[data-id]').each(function () {
+                  // 1 判断当前单选框是否被禁用或者没有被选中
+                  var $checkbox = $(this).find('input[name=select][type=checkbox]');
+                  if ($checkbox.prop('disabled') || !$checkbox.prop('checked')) {
+                    return;
+                  }
+                  // 2 判断是否填写了购买数量
+                  var $input = $(this).find('input[name=amount]');
+                  if ($input.val() == 0 || isNaN($input.val())) {
+                    return;
+                  }
+                  // 3 将当前sku_id和数量 赋值给参数中的数组
+                  req.items.push({
+                    sku_id: $(this).data('id'),
+                    amount: $input.val(),
+                  })
+                });
+              
+                // 发送请求
+                axios.post('{{ route('order.store') }}', req)
+                  .then(function (res){
+                    Swal('', '成功', 'success')
+                  }).catch(function (err){
+                    if(err.response.status == 422){
+                      let html = '<div>';
+                      $.each(err.response.data.errors, function(index, value){
+                        html += value[0] + '<br/>';
+                      })
+                      html+='</div>';
+                      Swal({
+                        type: 'error',
+                        title: html,
+                      })
+                    }else{
+                      Swal('', '系统错误，请联系客服', 'warning')
+                    }
+                  })
+                return false;
+              });
         });
     </script>
 @endsection
