@@ -13,6 +13,16 @@ use App\Jobs\CloseOrder;
 
 class OrderController extends Controller
 {
+    // 订单列表
+    public function index(){
+        $orders = Order::query()->with(['items.product', 'items.productSku'])
+            ->where('user_id', auth()->user()->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(5);
+        return view('order.index', ['orders' => $orders]);
+    }
+        
+    // 创建订单
     public function store(OrderRequest $request)
     {
         // dd($request->all());
