@@ -18,6 +18,7 @@ class CartController extends Controller
 
     // 添加购物车
     public function store(AddCartRequest $request){
+        // 购物车表的字段只需要 sku_id 和 数量就行了
         $user = auth()->user(); 
         $skuId = $request->sku_id;  
         $amount = $request->amount;    
@@ -26,9 +27,10 @@ class CartController extends Controller
         if($cart = $user->cart()->where('product_sku_id', $skuId)->first()){
             // 如果存在，则只是叠加数量
             $cart->update([
-                'amount' => $amount+$cart->amount
+                'amount' => $amount + $cart->amount
             ]);
         }else{
+            // associate()  尽在 belongsTo 时有效
             $cart = new Cart(['amount' => $amount]);
             $cart->user()->associate($user);
             $cart->productSku()->associate($skuId);
@@ -41,7 +43,7 @@ class CartController extends Controller
     public function destroy($productSku)
     {
         $res = auth()->user()->cart()->where('product_sku_id', $productSku)->delete();
-        dd($res);
+        // dd($res);
     }
 
    

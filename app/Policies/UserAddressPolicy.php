@@ -19,7 +19,7 @@ class UserAddressPolicy
         //
     }
 
-    // 当 own() 方法返回 true 时代表当前登录用户可以修改对应的地址。
+    // 当 own() 方法返回 true 时代表当前登录用户可以修改当前地址。
     // 需要在 AuthServiceProvider 注册这个授权策略
     public function own(User $user, UserAddress $address)
     {

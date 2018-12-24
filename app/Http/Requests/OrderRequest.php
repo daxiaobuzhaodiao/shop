@@ -33,6 +33,9 @@ class OrderRequest extends Request
                     }
                     // 获取当前索引
                     preg_match('/items\.(\d+)\.sku_id/', $attribute, $m);
+                    // dd($attribute, $m);
+                    // $attribute = 'items.0.sku_id';
+                    // $m =  [ 0 => "items.0.sku_id", 1 => "0"]
                     $index  = $m[1];
                     // 根据索引找到用户所提交的购买数量
                     $amount = $this->input('items')[$index]['amount'];

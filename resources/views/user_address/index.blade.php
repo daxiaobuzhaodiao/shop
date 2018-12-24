@@ -48,19 +48,19 @@
                 let id = $(this).data('id');
                 // 下方是sweetalert2 代码
                 const swalWithBootstrapButtons = Swal.mixin({
-                confirmButtonClass: 'btn btn-success',
-                cancelButtonClass: 'btn btn-danger mr-5',
-                buttonsStyling: false,
+                    confirmButtonClass: 'btn btn-success',
+                    cancelButtonClass: 'btn btn-danger mr-5',
+                    buttonsStyling: false,
                 })
 
                 swalWithBootstrapButtons({
-                title: '您确定么?',
-                text: "一旦删除将不会被恢复!",
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonText: '是，确定!',
-                cancelButtonText: '不，取消!',
-                reverseButtons: true
+                    title: '您确定么?',
+                    text: "一旦删除将不会被恢复!",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: '是，确定!',
+                    cancelButtonText: '不，取消!',
+                    reverseButtons: true
                 }).then((result) => {
                 // console.log(result.value);  // 确定返回true  取消无返回
                     if (result.value) {

@@ -27,34 +27,34 @@ Vue.component('select-district', {
   // 定义观察器，对应属性变更时会触发对应的观察器函数
   watch: {
     // 当选择的省发生改变时触发
-    provinceId(newVal) {
+    provinceId(newVal) {  // 86：{100：河北省，200：山西省}  如果选择 newVal = 100这个省
       if (!newVal) {
-        this.cities = {};
+        this.cities = {}; 
         this.cityId = '';
-        return;
+        return; 
       }
       // 将城市列表设为当前省下的城市
-      this.cities = addressData[newVal];
+      this.cities = addressData[newVal]; // 100：{110：A市，120： B市}  this.cities = 100这个省的城市列表
       // 如果当前选中的城市不在当前省下，则将选中城市清空
       if (!this.cities[this.cityId]) {
         this.cityId = '';
       }
     },
     // 当选择的市发生改变时触发
-    cityId(newVal) {
+    cityId(newVal) {   // 如果选择 newVal = 110这个市
       if (!newVal) {
         this.districts = {};
         this.districtId = '';
         return;
       }
       // 将地区列表设为当前城市下的地区
-      this.districts = addressData[newVal];
+      this.districts = addressData[newVal];  // 110:{111:a区，112：b区}    this.districts = 110 这个市的区县列表
       // 如果当前选中的地区不在当前城市下，则将选中地区清空
       if (!this.districts[this.districtId]) {
         this.districtId = '';
       }
     },
-    // 当选择的区发生改变时触发
+    // 当选择的区发生改变时触发 一旦选定了区表示省市区选择已经完成
     districtId() {
       // 触发一个名为 change 的 Vue 事件，事件的值就是当前选中的省市区名称，格式为数组
       this.$emit('change', [this.provinces[this.provinceId], this.cities[this.cityId], this.districts[this.districtId]]);
@@ -65,7 +65,7 @@ Vue.component('select-district', {
     this.setFromValue(this.initValue);
   },
   methods: {
-    // 
+    // 编辑的时候填充数据
     setFromValue(value) {
       // 过滤掉空值
       value = _.filter(value);

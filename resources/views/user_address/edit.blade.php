@@ -13,12 +13,7 @@
                 {!! Form::model($address,['route'=>['user_address.update', $address->id], 'method'=>'PUT']) !!}
                     <select-district :init-value="{{ json_encode([$address->province, $address->city, $address->district]) }}" @change="onDistrictChanged" inline-template>
                     @include('user_address._sanjiliandong')
-                    <!-- 插入了 3 个隐藏的字段 -->
-                    <!-- 通过 v-model 与 user-addresses-create-and-edit 组件里的值关联起来 -->
-                    <!-- 当组件中的值变化时，这里的值也会跟着变 -->
-                    <input type="hidden" name="province" v-model="province">
-                    <input type="hidden" name="city" v-model="city">
-                    <input type="hidden" name="district" v-model="district">
+                  
                 {!! Form::close() !!}
             </user-addresses-create-and-edit>
         </div>

@@ -4,8 +4,8 @@
 @section('content')
 <div class="row">
 <div class="col-lg-10 m-auto">
-<div class="panel panel-default">
-  <div class="panel-body product-info">
+<div class="card card-default">
+  <div class="card-body product-info">
     <div class="row">
       <div class="col-sm-5">
         <img class="cover" src="{{ $product->image_url }}" alt="">
@@ -34,7 +34,12 @@
             @endforeach
           </div>
         </div>
-        <div class="cart_amount"><label>数量</label><input type="text" class="form-control input-sm" value="1"><span>件</span><span class="stock"></span></div>
+        <div class="cart_amount">
+          <label>数量</label>
+          <input type="text" class="form-control input-sm" value="1"><span>件</span>
+          <!-- 通过js确定库存量 -->
+          <span class="stock"></span>
+        </div>
         <div class="buttons">
           @if($favored)
           <button class="btn btn-success btn-disfavor">取消收藏</button>
@@ -48,10 +53,10 @@
     <div class="product-detail mt-3">
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" id="description-tab" data-toggle="tab" href="#description" role="tab" aria-controls="description" aria-selected="true">description</a>
+                <a class="nav-link active" id="description-tab" data-toggle="tab" href="#description" role="tab" aria-controls="description" aria-selected="true">宝贝描述</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Profile</a>
+                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">评价列表</a>
             </li>
         </ul>
         <div class="tab-content" id="myTabContent">
@@ -103,11 +108,10 @@
                 .then(function (res){
                   Swal('','取消成功', 'success')
                     .then(function () {
-                      document.location.reload();
+                      window.location.reload();
                     })
                 }).catch(function (err){
                   // console.log(err.response);
-                  
                 })
             })
 
@@ -119,7 +123,7 @@
               }).then(function(res){
                   Swal('', '成功加入购物车', 'success')
                     .then(function(){
-                      document.location.href = '{{ route('cart.index') }}';
+                      window.location.href = '{{ route('cart.index') }}';
                     })
               }).catch(function (err){
                 if(err.response.status == 401){

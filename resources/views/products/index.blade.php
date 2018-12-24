@@ -30,9 +30,8 @@
 
 @section('customJS')
     <script>
-        // 注意 Unexpected token & 报错
-        var filters =  {!! json_encode($filters) !!}
         $(document).ready(function (){
+            var filters =  {!! json_encode($filters) !!}// 注意 Unexpected token & 报错 不能使用{{ json_encode($filters) }}
             $('.search-form input[name=search]').val(filters.search);
             $('.search-form select[name=order]').val(filters.order);
 

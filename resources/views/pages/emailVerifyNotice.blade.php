@@ -9,7 +9,7 @@
         <hr>
         <h5>请验证邮箱后再来~~</h5>
         <hr>
-        <a class="btn btn-primary" href="{{ route('email_verification.send') }}">没收到？重新发送验证邮件！</a>
+        <a class="btn btn-primary" href="{{ route('email_verification.send') }}">点击发送验证邮件！</a>
     </div>
 
 @endsection

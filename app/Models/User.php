@@ -31,7 +31,7 @@ class User extends Authenticatable
     /*
     belongsToMany() 方法用于定义一个多对多的关联，第一个参数是关联的模型类名，第二个参数是中间表的表名。
     withTimestamps() 代表中间表带有时间戳字段。
-    orderBy('user_favorite_products.created_at', 'desc') 代表默认的排序方式是根据中间表的创建时间倒序排序。
+    orderBy('user_favorite_products.created_at', 'desc') 代表默认的排序方式是根据中间表中数据的创建时间倒序排序。
     */
     public function favoriteProducts(){
         return $this->belongsToMany('App\Models\Product', 'user_favorite_products')
@@ -39,6 +39,7 @@ class User extends Authenticatable
             ->orderBy('user_favorite_products.created_at', 'desc');
     }
 
+    // 关联购物车表
     public function cart(){
         return $this->hasMany('App\Models\Cart');
     }

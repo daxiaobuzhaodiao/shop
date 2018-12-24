@@ -21,8 +21,8 @@ class CheckIfEmailVerified
             if($request->expectsJson()){
                 return response()->json(['msg' => '请验证邮箱后再来~'], 400);
             }
-            // 重定向到路由
-            return redirect()->route('email_verify_notice');
+            // 路由重定向
+            return redirect()->route('email_verification_notice');
         }
         return $next($request);
     }

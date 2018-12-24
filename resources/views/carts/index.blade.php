@@ -22,14 +22,18 @@
       @foreach($cartItems as $item)
         <tr data-id="{{ $item->productSku->id }}">
           <td>
+            <!-- 默认选中，调用关系确定当前的sku此时此刻是否正在售卖（加入购物车之后会有被下架的可能，所以要进行判断） -->
             <input type="checkbox" name="select" value="{{ $item->productSku->id }}" {{ $item->productSku->product->on_sale ? 'checked' : 'disabled' }}>
           </td>
+
           <td class="product_info">
             <div class="preview">
-              <a target="_blank" href="{{ route('product.show', [$item->productSku->product_id]) }}">
+              <!-- 点击跳转到当前sku对应的商品的详情页 -->
+              <a target="_blank" href="{{ route('product.show', $item->productSku->product_id) }}">
                 <img src="{{ $item->productSku->product->image_url }}">
               </a>
             </div>
+            <!-- 同样的判断sku对应的商品此时此刻是否正在收买，如果没有正在售卖则 添加 class="not_on_sale" 改变样式（删除线） -->
             <div @if(!$item->productSku->product->on_sale) class="not_on_sale" @endif>
               <span class="product_title">
                 <a target="_blank" href="{{ route('product.show', [$item->productSku->product_id]) }}"><strong>{{ $item->productSku->product->title }}</strong></a>
@@ -40,10 +44,13 @@
               @endif
             </div>
           </td>
+
           <td><span class="price">￥{{ $item->productSku->price }}</span></td>
+
           <td>
             <input type="text" class="form-control input-sm amount" @if(!$item->productSku->product->on_sale) disabled @endif name="amount" value="{{ $item->amount }}">
           </td>
+
           <td>
             <button class="btn btn-xs btn-danger btn-remove">移除</button>
           </td>
@@ -55,7 +62,7 @@
     {{-- <div>{{ $cartItems->render() }}</div> --}}
     <hr>
     <!-- 选择收获地址 -->
-      <form id="order-form">
+    <form id="order-form">
       <div class="form-group">
         <label>收获地址</label>
         <select class="custom-select" name="address">
@@ -83,7 +90,8 @@
         $(document).ready(function () {
             // 删除购车车
             $('.btn-remove').click(function () {
-              // closest() 方法可以获取到匹配选择器的第一个祖先元素，在这里就是当前点击的 移除 按钮之上的 <tr> 标签
+              // closest() 方法可以获取到匹配选择器的第一个祖先元素 从当前元素开始的
+              // parents() 方法类似 从父元素开始查找的
               var id = $(this).closest('tr').data('id');
               Swal({
                   title: '确定要删除么?',
@@ -96,7 +104,7 @@
               }).then((result) => {
                   if (result.value) {
                       axios.delete('/cart/'+id).then(function () {
-                          document.location.reload();
+                          window.location.reload();
                       })
                   }
               })
@@ -104,27 +112,25 @@
             
             // 全选
             $('#select-all').change(function() {
-              // prop() 方法可以知道标签中是否包含某个属性，当单选框被勾选时，对应的标签就会新增一个 checked 的属性
+              // 当获得的这个属性的值是true和false 的时候使用prop  其他时候就使用attr
               var checked = $(this).prop('checked');
-              // 获取所有 name=select 并且不带有 disabled 属性的勾选框
-              // 对于已经下架的商品我们不希望对应的勾选框会被选中，因此我们需要加上 :not([disabled]) 这个条件
               $('input[name=select][type=checkbox]:not([disabled])').each(function() {
-                // 将其勾选状态设为与目标单选框一致
                 $(this).prop('checked', checked); 
               });
             });
 
-              // 声称订单
+              // 提交订单
               $('.btn-create-order').click(function () {
                 // 构建请求参数
                 var req = {
                   address_id: $('#order-form').find('select[name=address]').val(),  // 收货地址
-                  items: [],      // sku_id 和 amount
                   remark: $('#order-form').find('textarea[name=remark]').val(), // 备注
+                  items: [],      // sku_id 和 amount
                 };
+
                 // 获得参数中的 items[] 这个数组的数据
                 $('table tr[data-id]').each(function () {
-                  // 1 判断当前单选框是否被禁用或者没有被选中
+                  // 1 忽略掉被禁用的和没有被选中的sku单品
                   var $checkbox = $(this).find('input[name=select][type=checkbox]');
                   if ($checkbox.prop('disabled') || !$checkbox.prop('checked')) {
                     return;
@@ -135,6 +141,23 @@
                     return;
                   }
                   // 3 将当前sku_id和数量 赋值给参数中的数组
+                  // 后端接收到的数据是这样的
+                  /*
+                  array:3 [
+                      "address_id" => "1"
+                      "remark" => null
+                      "items" => array:2 [
+                          0 => array:2 [
+                            "sku_id" => 12
+                            "amount" => "1"
+                          ]
+                          1 => array:2 [
+                            "sku_id" => 13
+                            "amount" => "3"
+                          ]
+                      ]
+                  ]
+                  */
                   req.items.push({
                     sku_id: $(this).data('id'),
                     amount: $input.val(),
@@ -160,7 +183,8 @@
                       Swal('', '系统错误，请联系客服', 'warning')
                     }
                   })
-                return false;
+                  // 阻止表单提交的行为
+                  return false;
               });
         });
     </script>

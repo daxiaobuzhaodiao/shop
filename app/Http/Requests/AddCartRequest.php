@@ -12,6 +12,9 @@ class AddCartRequest extends Request
         return [
             'sku_id'=>[
                 'required',
+                // $attribute 就是当前被验证的这个字段的名称
+                // $value 是当前这个字段的值
+                // $fail 是验证失败后的报错信息
                 function ($attribute, $value, $fail) {
                     if(!$sku = ProductSku::find($value)){   // 是否有这个单品存在
                         $fail('该商品不存在');
@@ -35,6 +38,7 @@ class AddCartRequest extends Request
         ];
     }
 
+    // 在报错的时候 字段名显示成中文
     public function attributes()
     {
         return [
@@ -42,6 +46,7 @@ class AddCartRequest extends Request
         ]; 
     }
 
+    // 报错汉化
     public function messages()
     {
         return [

@@ -11,8 +11,8 @@ class ProductController extends Controller
     // 商品列表
     public function index(Request $request){
         // 创建查询构造器
-        $builder = Product::query()->where('on_sale', true);
-        // $builder = Product::where('on_sale', true);
+        // $builder = Product::query()->where('on_sale', true); 
+        $builder = Product::where('on_sale', true);    // 有没有query() 都一样的
         // 判断用户是否使用了搜索(如果没有则略过代码块，如果有则赋值给变量$search)
         if($search = $request->input('search', '')){
             $like = '%'.$search.'%';
@@ -20,7 +20,7 @@ class ProductController extends Controller
             $builder->where(function ($query) use ($like) {
                 $query->where('title', 'like', $like)
                     ->orWhere('description', 'like', $like)
-                    ->orWhereHas('sku', function ($query) use ($like) {
+                    ->orWhereHas('sku', function ($query) use ($like) { // 第一个参数就是  Product模型中关联PRoductSku模型的方法名
                         $query->where('title', 'like', $like)
                             ->orWhere('description', 'like', $like);
                     });
@@ -41,7 +41,7 @@ class ProductController extends Controller
         $products = $builder->paginate(16);
         return view('products.index',[
             'products'=>$products,
-            // 优化搜索体验 搜索后搜索框不会变空白
+            // 优化搜索体验 搜索后搜索框不会变空白 前端页面通过js var filters =  {!! json_encode($filters) !!}
             'filters'=>[
                 'search' => $search,
                 'order' => $order

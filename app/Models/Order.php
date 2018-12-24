@@ -63,16 +63,30 @@ class Order extends Model
     protected $dates = [
         'paid_at',
     ];
+    
+    // 同一个订单只属于一个用户
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    // 同一个订单会有多个sku  而 OrderItem 就是存储订单的sku的
+    public function items()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
 
     protected static function boot()
     {
-        parent::boot();
+        parent::boot(); 
         // 监听模型创建事件，在写入数据库之前触发
-        static::creating(function ($model) {
+        // static::creating(function ($model) {                     // static 使用方法不明朗
+        self::creating(function ($model) {                          // static 和 self 有什么不同
             // 如果模型的 no 字段为空
             if (!$model->no) {
                 // 调用 findAvailableNo 生成订单流水号
-                $model->no = static::findAvailableNo();
+                // $model->no = static::findAvailableNo();          // static使用方法不明朗
+                $model->no = self::findAvailableNo();               // static 和  self 有什么不同
                 // 如果生成失败，则终止创建订单
                 if (!$model->no) {
                     return false;
@@ -81,15 +95,6 @@ class Order extends Model
         });
     }
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function items()
-    {
-        return $this->hasMany(OrderItem::class);
-    }
 
     public static function findAvailableNo()
     {

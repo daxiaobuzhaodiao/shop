@@ -128,7 +128,6 @@ return [
     */
     'upload' => [       // 文件上传设置
 
-        // Disk in `config/filesystem.php`.
         // 对应 config/filesystem.php 中的 disks
         'disk' => 'public',
 

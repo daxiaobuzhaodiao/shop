@@ -16,7 +16,7 @@ class RegisterListener implements ShouldQueue
     }
 
     
-    
+    // 用户注册成功后， 触发这个方法， 继续调用 EmailVerificationNotification 这个通知类给用户发验证邮件
     public function handle(Registered $event)
     {
         $user = $event->user;
