@@ -6,44 +6,40 @@ use Illuminate\Http\Request;
 use App\Http\Requests\AddCartRequest;
 use App\Models\Cart;
 use App\Models\ProductSku;
+use App\Services\CartService;
 
 class CartController extends Controller
 {
+    protected $cartService;
+
+    function __construct(CartService $cartService)
+    {
+        $this->cartService = $cartService;
+    }
     // 购物车列表
     public function index(){
         $addresses = auth()->user()->address()->orderBy('last_used_at', 'desc')->get();
-        $cartItems = auth()->user()->cart()->with(['productSku.product'])->get();
+        $cartItems = $this->cartService->get();
         return view('carts.index', compact('cartItems', 'addresses'));
     }
 
-    // 添加购物车
+    // 增
     public function store(AddCartRequest $request){
         // 购物车表的字段只需要 sku_id 和 数量就行了
-        $user = auth()->user(); 
-        $skuId = $request->sku_id;  
-        $amount = $request->amount;    
-
-        // 判断这个单品是否已经在当前用户的购物车
-        if($cart = $user->cart()->where('product_sku_id', $skuId)->first()){
-            // 如果存在，则只是叠加数量
-            $cart->update([
-                'amount' => $amount + $cart->amount
-            ]);
-        }else{
-            // associate()  尽在 belongsTo 时有效
-            $cart = new Cart(['amount' => $amount]);
-            $cart->user()->associate($user);
-            $cart->productSku()->associate($skuId);
-            $cart->save();
-        }
+        $this->cartService->store($request->sku_id, $request->amount);
         return [];
     }
 
-    // 删除购物车
+    // 删
     public function destroy($productSku)
     {
-        $res = auth()->user()->cart()->where('product_sku_id', $productSku)->delete();
-        // dd($res);
+       
+        $this->cartService->destroy($productSku);
+        return [];
+
+        // 这个方法报错     No query results for model [App\Models\Cart] 7
+        // $cart = Cart::findOrFail($productSku);
+        // $cart->delete($skuId);
     }
 
    

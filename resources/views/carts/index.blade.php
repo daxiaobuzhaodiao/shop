@@ -140,24 +140,7 @@
                   if ($input.val() == 0 || isNaN($input.val())) {
                     return;
                   }
-                  // 3 将当前sku_id和数量 赋值给参数中的数组
-                  // 后端接收到的数据是这样的
-                  /*
-                  array:3 [
-                      "address_id" => "1"
-                      "remark" => null
-                      "items" => array:2 [
-                          0 => array:2 [
-                            "sku_id" => 12
-                            "amount" => "1"
-                          ]
-                          1 => array:2 [
-                            "sku_id" => 13
-                            "amount" => "3"
-                          ]
-                      ]
-                  ]
-                  */
+                  // 3 将当前sku_id和数量 push给items[]
                   req.items.push({
                     sku_id: $(this).data('id'),
                     amount: $input.val(),
@@ -170,7 +153,7 @@
                         // console.log(res.data);
                         Swal('', '成功', 'success')
                         .then(function () {
-                          location.href = '/order/' + res.data.id 
+                          location.href = '/order/' + res.data.id
                         })
                   }).catch(function (err){
                     if(err.response.status == 422){
