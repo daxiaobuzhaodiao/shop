@@ -2,76 +2,78 @@
 @section('title', '订单列表')
 
 @section('content')
-  
-  
-  <div class="card text-center">
-    <div class="card-header text-center">
-      <h4>订单列表</h4>
-    </div>
-    <div class="card-body">
+<div class="row">
+<div class="col-lg-10 mx-auto">
+<div class="card card-default">
+  <div class="card-header text-center"><h4>订单列表</h4></div>
+  <div class="card-body">
+    <ul class="list-group">
       @foreach($orders as $order)
-      <div class="card mb-3">
-        <div class="card-header">
-          <div class="float-left">订单号：{{ $order->no }}</div>
-          <div class="float-right">创建时间：{{ $order->created_at }}</div>
-        </div>
-        <div class="card-body">
-          <table class="table table-bordered">
-            <thead class="thead">
-              <tr>
-                <th>商品信息</th>
-                <th>单价</th>
-                <th>数量</th>
-                <th>订单总价</th>
-                <th>数量</th>
-                <th>操作</th>
-              </tr>
+      <li class="list-group-item">
+        <div class="card card-default">
+          <div class="card-header">
+            订单号：{{ $order->no }}
+            <span class="pull-right">{{ $order->created_at->format('Y-m-d H:i:s') }}</span>
+          </div>
+          <div class="card-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>商品信息</th>
+                  <th class="text-center">单价</th>
+                  <th class="text-center">数量</th>
+                  <th class="text-center">订单总价</th>
+                  <th class="text-center">状态</th>
+                  <th class="text-center">操作</th>
+                </tr>
               </thead>
-              <tbody>
-                @foreach ($order->items as $index => $item)
-                  <tr>
-                        <td class="product-info">
-                          <div class="preview float-left mr-2">
-                            <img src="{{ $item->product->image_url }}" alt="" width="50px" height="50px">
-                          </div>
-                          <div class="float-left">
-                            <div class="product-title">
-                              {{ $item->product->title }}
-                            </div>
-                            <div class="sku-title">
-                              {{ $item->productSku->title }}
-                            </div>
-                          </div>
-                        </td>
-                        <td>{{ $item->price }}</td>
-                        <td>{{ $item->amount }}</td>
-                        @if($index === 0)
-                        <td rowspan="{{ count($order->items) }}">{{ $order->total_amount }}</td>
-                        <td rowspan="{{ count($order->items) }}">
-                            @if($order->paid_at)
-                            @if($order->refund_status === \App\Models\Order::REFUND_STATUS_PENDING)
-                              已支付
-                            @else
-                              {{ \App\Models\Order::$refundStatusMap[$order->refund_status] }}
-                            @endif
-                            @elseif($order->closed)
-                              已关闭
-                            @else
-                              未支付<br>
-                              请于 {{ $order->created_at->addSeconds(config('app.order_ttl'))->format('H:i') }} 前完成支付<br>
-                              否则订单将自动关闭
-                            @endif
-                        </td>
-                        <td rowspan="{{ count($order->items) }}"><a href="" class="btn btn-primary btn-sm">查看订单</a></td>
-                        @endif
-                  </tr>
-                @endforeach
-              </tbody>
-          </table>
+              @foreach($order->items as $index => $item)
+              <tr>
+                <td class="product-info">
+                  <div class="preview">
+                    <a target="_blank" href="{{ route('product.show', [$item->product_id]) }}">
+                      <img src="{{ $item->product->image_url }}">
+                    </a>
+                  </div>
+                  <div>
+                    <span class="product-title">
+                       <a target="_blank" href="{{ route('product.show', [$item->product_id]) }}">{{ $item->product->title }}</a>
+                     </span>
+                    <span class="sku-title">{{ $item->productSku->title }}</span>
+                  </div>
+                </td>
+                <td class="sku-price text-center">￥{{ $item->price }}</td>
+                <td class="sku-amount text-center">{{ $item->amount }}</td>
+                @if($index === 0)
+                  <td rowspan="{{ count($order->items) }}" class="text-center total-amount">￥{{ $order->total_amount }}</td>
+                  <td rowspan="{{ count($order->items) }}" class="text-center" width="25%">
+                    @if($order->paid_at)
+                      @if($order->refund_status === \App\Models\Order::REFUND_STATUS_PENDING)
+                        已支付
+                      @else
+                        {{ \App\Models\Order::$refundStatusMap[$order->refund_status] }}
+                      @endif
+                    @elseif($order->closed)
+                      已关闭
+                    @else
+                      未支付<br>
+                      请于 {{ $order->created_at->addSeconds(config('app.order_ttl'))->format('H:i') }} 前完成支付<br>
+                      否则订单将自动关闭
+                    @endif
+                  </td>
+                  <td rowspan="{{ count($order->items) }}" class="text-center"><a class="btn btn-primary btn-sm" href="{{ route('order.show', $order->id) }}">查看订单</a></td>
+                @endif
+              </tr>
+              @endforeach
+            </table>
+          </div>
         </div>
-      </div>
+      </li>
       @endforeach
-      <div class="float-right">{{ $orders->render() }}</div>
-    </div>
+    </ul>
+    <div class="pull-right">{{ $orders->render() }}</div>
   </div>
+</div>
+</div>
+</div>
 @endsection

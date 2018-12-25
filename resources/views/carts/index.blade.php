@@ -167,7 +167,11 @@
                 // 发送请求
                 axios.post('{{ route('order.store') }}', req)
                   .then(function (res){
-                    Swal('', '成功', 'success')
+                        // console.log(res.data);
+                        Swal('', '成功', 'success')
+                        .then(function () {
+                          location.href = '/order/' + res.data.id 
+                        })
                   }).catch(function (err){
                     if(err.response.status == 422){
                       let html = '<div>';

@@ -99,4 +99,14 @@ class OrderController extends Controller
         $this->dispatch(new CloseOrder($order, config('app.order_tt')));
         return $order;
     }
+
+    // 订单详情
+    public function show(Order $order)
+    {
+        // 查看权限
+        $this->authorize('own', $order);
+        // with 预加载 ORM查询构造器上调用
+        // load 延迟预加载 在模型对象上调用
+        return view('order.show', ['order'=>$order->load(['items.productSku', 'items.product'])]);
+    }
 }
