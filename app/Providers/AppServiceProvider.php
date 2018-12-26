@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton('alipay', function () {
             $config = config('pay.alipay');
             // $config['notify_url'] = route('payment.alipay.notify'); // 服务器端回调地址
-            $config['notify_url'] = 'http://requestbin.fullcontact.com/1cbphl71';
+            $config['notify_url'] = 'http://requestbin.fullcontact.com/1orqfis1';
             $config['return_url'] = route('payment.alipay.return'); //前端回调地址
             // 判断当前项目运行环境是否为线上环境
             if (app()->environment() !== 'production') {
@@ -43,15 +43,15 @@ class AppServiceProvider extends ServiceProvider
             return Pay::alipay($config);
         });
 
-        $this->app->singleton('wechat_pay', function () {
-            $config = config('pay.wechat');
-            if (app()->environment() !== 'production') {
-                $config['log']['level'] = Logger::DEBUG;
-            } else {
-                $config['log']['level'] = Logger::WARNING;
-            }
-            // 调用 Yansongda\Pay 来创建一个微信支付对象
-            return Pay::wechat($config);
-        });
+        // $this->app->singleton('wechat_pay', function () {
+        //     $config = config('pay.wechat');
+        //     if (app()->environment() !== 'production') {
+        //         $config['log']['level'] = Logger::DEBUG;
+        //     } else {
+        //         $config['log']['level'] = Logger::WARNING;
+        //     }
+        //     // 调用 Yansongda\Pay 来创建一个微信支付对象
+        //     return Pay::wechat($config);
+        // });
     }
 }

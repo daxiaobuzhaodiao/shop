@@ -13,6 +13,8 @@
 
 Auth::routes();
 
+Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index'); // 查看日志
+
 Route::get('/', 'ProductController@index')->name('root');
 Route::resource('product', 'ProductController');
 

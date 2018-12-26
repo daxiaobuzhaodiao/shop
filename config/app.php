@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'order_tt'=>30,     // 订单在30分钟后未付款则自动关闭  在队列任务中使用
+    'order_tt'=>1800,     // 订单在30分钟后未付款则自动关闭  在队列任务中使用
     /*
     |--------------------------------------------------------------------------
     | Application Name
@@ -161,6 +161,8 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
+        Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
+
 
         /*
          * Package Service Providers...

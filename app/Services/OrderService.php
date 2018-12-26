@@ -5,14 +5,17 @@ use App\Models\Order;
 use Illuminate\Support\Carbon;
 use App\Models\ProductSku;
 use App\Exceptions\InvalidRequestException;
+use App\Jobs\CloseOrder;
+
 
 class OrderService{
     public function store($user, $address, $remark, $items)
     {
+        // dd($items);
         // 1 开启事务
-        $order = DB::transaction(function () use($user, $address, $remark, $items){
+        $order = \DB::transaction(function () use($user, $address, $remark, $items){
             // 1 更新 user_address 的 last_used_at 字段
-            $address->update('last_used_at', Carbon::now());
+            $address->update(['last_used_at', Carbon::now()]);
 
             // 2 创建订单
             $order = new Order([
@@ -24,23 +27,23 @@ class OrderService{
                     'contact_phone' => $address->contact_phone
                 ],
                 'remark' => $remark,
-                'total_mark' => 0   //暂且存 0
+                'total_amount' => 0   // 因为数据库设置了不能为空  所以暂且存 0 
             ]);
-
             // 3 订单关联到当前用户
             $order->user()->associate($user);
             $order->save();
 
             // 4 遍历 items  1->将订单中的单品信息存入orderitems表， 2-> 获取总金额
             $total = 0;
+            // items  是个二维数组
             foreach($items as $item){   // item 只有 price 和 amount 和 sku_id
-                $productSku = ProductSku::findOrFail($item->sku_id);
-                // 利用关系直接存储当前被遍历的sku信息
-                $orderItem = $order->items()->create([
+                $productSku = ProductSku::findOrFail($item['sku_id']);
+                // make 是什么意思
+                $orderItem = $order->items()->make([
                     'price'=>$productSku->price,
-                    'amount' => $item['amount']
+                    'amount' => $item['amount'],
                 ]);
-                $orderItem->user()->associate($user);// 关联到当前user
+                $orderItem->productSku()->associate($productSku);// 关联到sku
                 $orderItem->product()->associate($productSku->product_id);// 关联到商品
                 $orderItem->save();
                 // product_sku 库存自减

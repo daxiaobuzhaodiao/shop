@@ -5,11 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\OrderRequest;
 use App\Models\UserAddress;
-use Illuminate\Support\Carbon;
-use App\Models\ProductSku;
-use App\Exceptions\InvalidRequestException;
 use App\Models\Order;
-use App\Jobs\CloseOrder;
 use App\Services\OrderService;
 
 class OrderController extends Controller
@@ -23,7 +19,7 @@ class OrderController extends Controller
         return view('order.index', ['orders' => $orders]);
     }
         
-    // 增 （注：这里也执行了删除购物车的操作所以调用CartService的删除方法删除购物车）
+    // 增 
     public function store(OrderRequest $request, OrderService $orderService)
     {
         $address = UserAddress::findOrFail($request->address_id);
