@@ -57,9 +57,12 @@
                       已关闭
                     @else
                       未支付<br>
-                      请于 {{ $order->created_at->addSeconds(config('app.order_ttl'))->format('H:i') }} 前完成支付<br>
+                      请于 {{ $order->created_at->addSeconds(config('app.order_tt'))->format('H:i') }} 前完成支付<br>
                       否则订单将自动关闭
+                      <!-- 只有未支付的订单才显示付款按钮 -->
+                      <a class="btn btn-sm btn-primary" href="{{ route('payment.alipay', $order->id) }}">支付宝付款</a>
                     @endif
+                    <!-- 未付款 并且 没有被关闭的订单  才显示支付按钮 -->
                   </td>
                   <td rowspan="{{ count($order->items) }}" class="text-center"><a class="btn btn-primary btn-sm" href="{{ route('order.show', $order->id) }}">查看订单</a></td>
                 @endif

@@ -18,7 +18,8 @@ class VerifyCsrfToken extends Middleware
      *
      * @var array
      */
+    // 如果访问的 URL 能够匹配上 $except 里任意一项，Laravel 就不会去检查 CSRF Token
     protected $except = [
-        //
+        'payment/alipay/notify',
     ];
 }
