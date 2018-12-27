@@ -35,12 +35,18 @@ class OrdersController extends Controller
      * @param Content $content
      * @return Content
      */
-    public function show($id, Content $content)
+    public function show(Order $order, Content $content)
     {
+        // return $content
+        //     ->header('Detail')
+        //     ->description('description')
+        //     ->body($this->detail($id));
+
+        
         return $content
-            ->header('Detail')
-            ->description('description')
-            ->body($this->detail($id));
+        ->header('查看订单')
+        ->description('description')
+        ->body(view('admin.orders.show', compact('order')));//面顶部和左侧都还是 Laravel-Admin 原本的菜单，而页面主要内容就变成了我们这个模板视图渲染的内容了。
     }
 
     /**
