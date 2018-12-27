@@ -7,6 +7,7 @@ use App\Http\Requests\OrderRequest;
 use App\Models\UserAddress;
 use App\Models\Order;
 use App\Services\OrderService;
+use App\Exceptions\InvalidRequestException;
 
 class OrderController extends Controller
 {
@@ -35,5 +36,21 @@ class OrderController extends Controller
         // with 预加载 ORM查询构造器上调用
         // load 延迟预加载 在模型对象上调用
         return view('order.show', ['order'=>$order->load(['items.productSku', 'items.product'])]);
+    }
+
+    // 确认收获
+    public function received(Order $order)
+    {
+        //权限校验
+        $this->authorize('own', $order);    
+        // 确认订单状态是否是 已发货
+        if($order->ship_status !== \App\Models\Order::SHIP_STATUS_DELIVERED){
+            throw new InvalidRequestException('发货状态不正确');
+        }
+        // 更新发货状态为 已收获
+        $order->update(['ship_status' => \App\Models\Order::SHIP_STATUS_RECEIVED]);
+
+        // 返回原页面
+        return response()->json(['msg'=>'确认收货成功']);
     }
 }

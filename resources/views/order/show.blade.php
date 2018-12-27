@@ -46,6 +46,19 @@
             <div class="line"><div class="line-label">收货地址：</div><div class="line-value">{{ join(' ', $order->address) }}</div></div>
             <div class="line"><div class="line-label">订单备注：</div><div class="line-value">{{ $order->remark ?: '-' }}</div></div>
             <div class="line"><div class="line-label">订单编号：</div><div class="line-value">{{ $order->no }}</div></div>
+            <!-- 输出物流状态 -->
+            <div class="line">
+              <div class="line-label">物流状态：</div>
+              <div class="line-value">{{ \App\Models\Order::$shipStatusMap[$order->ship_status] }}</div>
+            </div>
+            <!-- 如果有物流信息则展示 -->
+            @if($order->ship_data)
+            <div class="line">
+              <div class="line-label">物流信息：</div>
+              <div class="line-value">{{ $order->ship_data['express_company'] }} {{ $order->ship_data['express_no'] }}</div>
+            </div>
+            @endif
+
           </div>
           <div class="order-summary text-right">
             <div class="total-amount">
@@ -71,10 +84,48 @@
             @if(!$order->paid_at && !$order->closed)
             <a class="btn btn-sm btn-primary mt-2" href="{{ route('payment.alipay', $order->id) }}">支付宝支付</a>
             @endif
+            @if($order->ship_status === \App\Models\Order::SHIP_STATUS_DELIVERED)
+              <button class="btn btn-primary btn-sm btn-receive mt-2">确认收获</button>
+            @endif
           </div>
         </div>
       </div>
     </div>
     </div>
     </div>
+@endsection
+
+@section('customJS')
+    <script>
+      $(document).ready(function() {
+        $('.btn-receive').click(function () {
+          Swal({
+            title: '',
+            text: "您确定么?",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '确认',
+            cancelButtonText: '取消'
+          }).then((result) => {
+            // 如果确定则 发请求
+            if (result.value) {
+              axios.post('{{ route('order.received', $order->id) }}').then((res)=>{
+                // 请求成功 弹窗
+                if(res.status === 200){
+                  Swal(
+                    '',
+                    res.data.msg,
+                    'success'
+                  ).then(()=>{
+                    location.reload();
+                  })
+                }
+              })
+            }
+          })
+        })
+      })
+    </script>
 @endsection

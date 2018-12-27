@@ -67,7 +67,7 @@
         <label>收获地址</label>
         <select class="custom-select" name="address">
           @foreach ($addresses as $address)
-            <option value="{{ $address->id }}">{{ $address->getFullAddress() }} {{ $address->contact_name }} {{ $address->contact_phone }}</option>
+            <option value="{{ $address->id }}">{{ $address->full_address }} {{ $address->zip }} {{ $address->contact_name }} {{ $address->contact_phone }}</option>
           @endforeach
         </select>
       </div>

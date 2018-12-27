@@ -26,7 +26,7 @@ class UserAddress extends Model
     }
 
     // 创建了一个访问器，在之后的代码里可以直接通过 $address->full_address 来获取完整的地址，而不用每次都去拼接。
-    public function getFullAddress(){
+    public function getFullAddressAttribute(){
         return "{$this->province}{$this->city}{$this->district}{$this->address}";
     }
 }
