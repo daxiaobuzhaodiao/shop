@@ -29,5 +29,6 @@ Route::group([
     $router->get('products/{id}/edit', 'ProductsController@edit');
     $router->put('products/{id}', 'ProductsController@update');
     $router->delete('products/{id}', 'ProductsController@destroy');
+    $router->get('orders', 'OrdersController@index')->name('admin.orders.index');
 
 });

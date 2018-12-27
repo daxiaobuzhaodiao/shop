@@ -29,6 +29,28 @@ class PaymentController extends Controller
     // 前端回调页面
     public function alipayReturn()
     {
+        // 校验提交的参数是否合法
+        // $data = app('alipay')->verify();
+        // dd($data);
+        /*
+            Collection {#390 ▼
+                #items: array:12 [▼
+                "charset" => "GBK"
+                "out_trade_no" => "20181227131520535263"
+                "method" => "alipay.trade.page.pay.return"
+                "total_amount" => "157.00"
+                "sign" => "WEANxPbR4kgcZS0L5bh2KXdcDbKQBVpiBodYJopYgjf8eyspeeNg075sODwcGdyqE9ua5TpPlvazoEq03Hx1/i/0HqHR20qX4BjW5FjTEuPl4PPcO6yUAQACUAaHG4CPKK0KXsgGHO7Gk6S8vUQOPQw3XbJelqXW ▶"
+                "trade_no" => "2018122722001475000501684384"
+                "auth_app_id" => "2016092300575102"
+                "version" => "1.0"
+                "app_id" => "2016092300575102"
+                "sign_type" => "RSA2"
+                "seller_id" => "2088102176860528"
+                "timestamp" => "2018-12-27 13:15:48"
+                ]
+            }
+        */
+        
         try {
             app('alipay')->verify();
         } catch (\Exception $e) {
@@ -41,8 +63,10 @@ class PaymentController extends Controller
     // 服务器端回调
     public function alipayNotify()
     {
+        
         // 校验输入参数
         $data  = app('alipay')->verify();
+        // \Log::debug('Alipay notify', $data->all());
         // 如果订单状态不是成功或者结束，则不走后续的逻辑
         // 所有校验状态：https://docs.open.alipay.com/59/103672
         if(!in_array($data->trade_status, ['TRADE_SUCCESS', 'TRADE_FINISHED'])) {
@@ -67,7 +91,7 @@ class PaymentController extends Controller
         ]);
         
         // 调用event
-        $this->afterPaid($order);
+        // $this->afterPaid($order);
 
         return app('alipay')->success();
      
