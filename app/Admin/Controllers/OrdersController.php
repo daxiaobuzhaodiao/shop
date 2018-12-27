@@ -9,6 +9,8 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
+use App\Exceptions\InvalidRequestException;
+use Illuminate\Http\Request;
 
 class OrdersController extends Controller
 {
@@ -47,6 +49,36 @@ class OrdersController extends Controller
         ->header('查看订单')
         ->description('description')
         ->body(view('admin.orders.show', compact('order')));//面顶部和左侧都还是 Laravel-Admin 原本的菜单，而页面主要内容就变成了我们这个模板视图渲染的内容了。
+    }
+    
+    // 发货
+    public function ship(Order $order, Request $request)
+    {
+        // 判断订单是否已付款
+        if(!$order->paid_at){
+            throw new InvalidRequestException('订单未付款不能发货');
+        }
+        // 判断订单状态是否是未发货
+        if($order->ship_status !== Order::SHIP_STATUS_PENDING){
+            throw new InvalidRequestException('该订单已发货');       
+        }
+        // 表单验证  在laravel 5.5 之后 表单验证成功后会直接返回校验过的值
+        $data = $this->validate($request, [
+            'express_company' => ['required'],
+            'express_no' => ['required']
+        ], [], [
+            // 显示中文信息
+            'express_company' => '物流公司',
+            'express_no' => '物流单号'
+        ]);
+        // 更改订单状态为已发货
+        $order->update([
+            'ship_status' => Order::SHIP_STATUS_DELIVERED,
+            // 在 order 模型的 $casts 中定义了 ship_data = json  所以可直接将数组复制给 ship_data 字段
+            'ship_data' => $data
+        ]);
+        // 返回上一页 订单状态也将会更新
+        return back();
     }
 
     /**
