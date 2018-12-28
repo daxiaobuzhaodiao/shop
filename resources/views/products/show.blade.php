@@ -62,7 +62,32 @@
         <div class="tab-content" id="myTabContent">
             <!-- 因为我们后台编辑商品详情用的是富文本编辑器，提交的内容是 Html 代码，此处需要原样输出而不需要进行 Html 转义 -->
             <div class="tab-pane fade show active p-3" id="description" role="tabpanel" aria-labelledby="description-tab">{!! $product->description !!}</div>
-            <div class="tab-pane fade p-3" id="profile" role="tabpanel" aria-labelledby="profile-tab">...</div>
+            <div class="tab-pane fade p-3" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                <!-- 评论列表开始 -->
+                <table class="table table-bordered table-striped">
+                    <thead>
+                      <tr>
+                        <td>用户</td>
+                        <td>商品</td>
+                        <td>评分</td>
+                        <td>评价</td>
+                        <td>时间</td>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @foreach($reviews as $review)
+                      <tr>
+                        <td>{{ $review->order->user->name }}</td>
+                        <td>{{ $review->productSku->title }}</td>
+                        <td>{{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}</td>
+                        <td>{{ $review->review }}</td>
+                        <td>{{ $review->reviewed_at->format('Y-m-d H:i') }}</td>
+                      </tr>
+                      @endforeach
+                    </tbody>
+                </table>
+                <!-- 评论列表结束 -->
+            </div>
         </div>
     </div>
   </div>
@@ -95,7 +120,10 @@
                   if(err.response.status == 401){
                     Swal('', '请先登录', 'warning');
                   }else if(err.response.data.msg){
-                    Swal('', err.response.data.msg, 'warning')
+                    Swal('', err.response.data.msg, 'warning')// 验证邮箱的中间件 返回msg错误信息
+                      .then(()=>{
+                        location.href = '/email_verification/send';
+                      })  
                   }else{
                     Swal('','未知错误，请稍后再试', 'warning')
                   }
@@ -138,6 +166,11 @@
                     type: 'error',
                     title: html,
                   })
+                }else if(err.response.status == 400){
+                  Swal('', err.response.data.msg, 'warning')
+                    .then(()=>{
+                      location.href = '/email_verification/send';
+                    });
                 }else{
                   Swal('', '系统错误，请联系客服', 'warning');
                 }

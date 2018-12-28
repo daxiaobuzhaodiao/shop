@@ -3,6 +3,14 @@
 @section('title', '商品列表')
 
 @section('content')
+    @if(session('message') && session('user'))
+        <div class="alert alert-warning alert-dismissible fade show email-verify-alert" role="alert">
+            <strong>{{ session('user')->name }}</strong> {{ session('message') }} 
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
     <div class="row mb-2">
         <form class="form-inline my-2 my-lg-0 w-100 search-form" action="{{ route('product.index') }}" method="get">
             <div class="col-6 text-left">
@@ -30,7 +38,13 @@
 
 @section('customJS')
     <script>
+
         $(document).ready(function (){
+            setTimeout(() => {
+                $(".email-verify-alert").slideToggle("slow");
+            }, 5000);
+
+
             var filters =  {!! json_encode($filters) !!}// 注意 Unexpected token & 报错 不能使用{{ json_encode($filters) }}
             $('.search-form input[name=search]').val(filters.search);
             $('.search-form select[name=order]').val(filters.order);
@@ -39,5 +53,6 @@
                 $('.search-form').submit();
             })
         })
+        
     </script>
 @endsection

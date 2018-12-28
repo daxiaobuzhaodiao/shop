@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Exceptions\InvalidRequestException;
+use App\Models\OrderItem;
 
 class ProductController extends Controller
 {
@@ -52,17 +53,27 @@ class ProductController extends Controller
     // 商品详情页
     public function show(Product $product, Request $request)
     {
-        // 判断商品是否已上架
+        // 1 判断商品是否已上架
         if(!$product->on_sale){
             throw new InvalidRequestException('该商品未上架');
         }
-        
-        $favored = false;
+        // 2 收藏按钮的显示
+        $favored = false;  // 这里设置默认false只是为了给访客看的 如果是访客的话 页面会报错找不到 $favored
         if($user = auth()->user()){
             $res = $user->favoriteProducts()->find($product->id);  //如果找到就返回这个商品对象！如果找不到返回null  null转换为boolean为false
             $favored = boolval($res);
         }
-        return view('products.show',compact('product', 'favored'));
+        // 3 加载该商品的评价内容  因为评价的是一个sku  
+        $reviews = OrderItem::query()
+            ->with(['order.user', 'productSku'])
+            ->where('product_id', $product->id)     // 筛选只属于当前商品的sku
+            ->whereNotNull('reviewed_at')       // 已经评价过的
+            ->orderBy('reviewed_at', 'desc')    // 评价时间倒序排序
+            ->limit(10)
+            ->get();
+        
+            
+        return view('products.show',compact('product', 'favored', 'reviews'));
     }
 
     // 收藏商品

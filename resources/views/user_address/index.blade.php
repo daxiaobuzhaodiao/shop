@@ -20,7 +20,7 @@
                 <tbody>
                     @foreach ($addresses as $address)
                         <tr>
-                            <td scope="row">{{ $address->getFullAddress() }}</td>
+                            <td scope="row">{{ $address->full_address }}</td>
                             <td>{{ $address->zip }}</td>
                             <td>{{ $address->contact_name }}</td>
                             <td>{{ $address->contact_phone }}</td>
