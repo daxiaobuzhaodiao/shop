@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use App\Models\Product;
+use App\Models\ProductSku;
 
 class ProductsSeeder extends Seeder
 {
@@ -11,6 +13,11 @@ class ProductsSeeder extends Seeder
      */
     public function run()
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+        Product::truncate();
+        ProductSku::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
+        
         $products = factory(\App\Models\Product::class, 30)->create();
         // 创建30个商品
         foreach ($products as $product) {
