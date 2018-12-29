@@ -11,7 +11,7 @@
 |
 */
 
-Auth::routes();
+Auth::routes(['verify' => true]);     // 邮箱验证的中间件
 
 Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index'); // 查看日志
 
@@ -20,10 +20,7 @@ Route::resource('product', 'ProductController');
 
 // 邮箱验证
 Route::group(['middleware'=>'auth'], function(){
-    Route::get('email_verification_notice', 'PageController@emailVerifyNotice')->name('email_verification_notice');    // 提醒用户去验证邮箱
-    Route::get('email_verification/verify', 'PageController@verify')->name('email_verification.verify');   //验证url地址
-    Route::get('email_verification/send', 'PageController@send')->name('email_verification.send'); //用户主动验证邮箱
-    Route::group(['middleware' => 'email_verify'], function () {
+    Route::group(['middleware' => 'verified'], function () {
         Route::resource('user_address', 'UserAddressController');
         Route::post('product/{product}/favorite', 'ProductController@favorite')->name('product.favorite'); // 收藏
         Route::delete('product/{product}/disfavorite', 'ProductController@disfavorite')->name('product.disfavorite');   // 取消收藏

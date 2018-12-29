@@ -24,9 +24,6 @@ class EventServiceProvider extends ServiceProvider
         // Registered::class => [
         //     SendEmailVerificationNotification::class,
         // ],
-        Registered::class => [
-            RegisterListener::class,
-        ],
         
         // 订单支付成功后
         OrderPaid::class => [
