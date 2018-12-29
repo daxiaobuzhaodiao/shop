@@ -103,4 +103,29 @@ class OrderController extends Controller
 
         return redirect()->back();
     }
+
+    // 退款
+    public function applyRefund(Order $order, Request $request)
+    {
+        // 1 校验订单是否属于当前用户
+        $this->authorize('own', $order);
+        // 2 判断订单是否已付款
+        if(!$order->paid_at){
+            throw new InvalidRequestException('该订单未付款，不可退款');
+        }
+        // 3 判断订单退款状态是否正确  退款状态一共是5种  1 未退款 2 已申请退款 3 退款中 4 退款成功 5 退款失败
+        if($order->refund_status !== Order::REFUND_STATUS_PENDING){
+            throw new InvalidRequestException('该订单已经申请过退款，请勿重新申请');
+        }
+        // 4 将退款理由存进  extra 字段中
+        $extra = $order->extra ? : [];
+        $extra['refund_reason'] = $request->reason;
+        // 5 修改订单的退款状态和备注
+        $order->update([
+            'refund_status' =>  Order::REFUND_STATUS_APPLIED,
+            'extra' => $extra
+        ]);
+
+        return $order;
+    }
 }

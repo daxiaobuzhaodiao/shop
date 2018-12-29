@@ -7,7 +7,8 @@
     <div class="col-lg-10 mx-auto">
     <div class="card card-default">
       <div class="card-header text-center">
-        <h4>订单详情</h4>
+        <span class="float-left">订单详情</span>
+        <a class="float-right" href="{{ route('order.index') }}">返回订单列表</a>
       </div>
       <div class="card-body">
         <table class="table">
@@ -58,6 +59,17 @@
               <div class="line-value">{{ $order->ship_data['express_company'] }} {{ $order->ship_data['express_no'] }}</div>
             </div>
             @endif
+             <!-- 订单已支付，且退款状态不是未退款时展示退款信息, 如果是未退款那么用户就没有申请退款所以就不显示任何东西了 -->  
+            @if($order->paid_at && $order->refund_status !== \App\Models\Order::REFUND_STATUS_PENDING)
+            <div class="line">
+              <div class="line-label">退款状态：</div>
+              <div class="line-value">{{ \App\Models\Order::$refundStatusMap[$order->refund_status] }}</div>
+            </div>
+            <div class="line">
+              <div class="line-label">退款理由：</div>
+              <div class="line-value">{{ $order->extra['refund_reason'] }}</div>
+            </div>
+            @endif
 
           </div>
           <div class="order-summary text-right">
@@ -81,11 +93,24 @@
                 @endif
               </div>
             </div>
+            <!-- 支付 -->
             @if(!$order->paid_at && !$order->closed)
-            <a class="btn btn-sm btn-primary mt-2" href="{{ route('payment.alipay', $order->id) }}">支付宝支付</a>
+              <a class="btn btn-sm btn-primary mt-2" href="{{ route('payment.alipay', $order->id) }}">支付宝支付</a>
             @endif
+            <!-- 确认收货 -->
             @if($order->ship_status === \App\Models\Order::SHIP_STATUS_DELIVERED)
               <button class="btn btn-primary btn-sm btn-receive mt-2">确认收获</button>
+            @endif
+            <!-- 显示拒绝退款的理由 -->
+            @if(isset($order->extra['refund_disagree_reason']))
+            <div>
+              <span>拒绝退款理由：</span>
+              <div class="value">{{ $order->extra['refund_disagree_reason'] }}</div>
+            </div>
+            @endif
+            <!-- 申请退款 -->
+            @if($order->paid_at && $order->refund_status === \App\Models\Order::REFUND_STATUS_PENDING)
+              <button class="btn btn-primary btn-sm mt-2 btn-apply-refund">申请退款</button>
             @endif
           </div>
         </div>
@@ -98,34 +123,74 @@
 @section('customJS')
     <script>
       $(document).ready(function() {
-        $('.btn-receive').click(function () {
-          Swal({
-            title: '',
-            text: "您确定么?",
-            type: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: '确认',
-            cancelButtonText: '取消'
-          }).then((result) => {
-            // 如果确定则 发请求
-            if (result.value) {
-              axios.post('{{ route('order.received', $order->id) }}').then((res)=>{
-                // 请求成功 弹窗
-                if(res.status === 200){
-                  Swal(
-                    '',
-                    res.data.msg,
-                    'success'
-                  ).then(()=>{
-                    location.reload();
-                  })
-                }
-              })
-            }
+          $('.btn-receive').click(function () {
+            Swal({
+              title: '',
+              text: "您确定么?",
+              type: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: '确认',
+              cancelButtonText: '取消'
+            }).then((result) => {
+              // 如果确定则 发请求
+              if (result.value) {
+                axios.post('{{ route('order.received', $order->id) }}').then((res)=>{
+                  // 请求成功 弹窗
+                  if(res.status === 200){
+                    Swal(
+                      '',
+                      res.data.msg,
+                      'success'
+                    ).then(()=>{
+                      location.reload();
+                    })
+                  }
+                })
+              }
+            })
           })
-        })
+
+          // 退款
+          $('.btn-apply-refund').click(function () {
+            Swal({
+              title: '请输入退款理由',
+              input: 'text',
+              inputAttributes: {
+                autocapitalize: 'off'
+              },
+              showCancelButton: true,
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              showLoaderOnConfirm: true,
+              preConfirm: (data) => {
+                // data 就是input的值
+                axios.post('{{ route('order.apply_refund', $order->id) }}', {reason: data})
+                .then((res)=>{
+                    // 请求成功
+                    Swal(
+                      '',
+                      '申请成功',
+                      'success'
+                    ).then(()=>{
+                      location.reload()
+                    })
+                    
+                }).catch((err)=>{
+                  Swal(
+                      '',
+                      err.response.data.msg,
+                      'error'
+                    )
+                })
+              }
+            }).then(()=>{
+                // 取消了
+                // alert(22);
+            })
+          })
+            
       })
     </script>
 @endsection

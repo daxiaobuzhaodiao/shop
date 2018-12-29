@@ -11,6 +11,7 @@ use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
 use App\Exceptions\InvalidRequestException;
 use Illuminate\Http\Request;
+use App\Http\Requests\Admin\HandleRefundRequest;
 
 class OrdersController extends Controller
 {
@@ -44,7 +45,6 @@ class OrdersController extends Controller
         //     ->description('description')
         //     ->body($this->detail($id));
 
-        
         return $content
         ->header('查看订单')
         ->description('description')
@@ -145,19 +145,6 @@ class OrdersController extends Controller
                 $batch->disableDelete();
             });
         });
-        
-        // $grid->user_id('User id');
-        // $grid->address('Address');
-        // $grid->remark('Remark');
-        // $grid->payment_no('Payment no');
-        // $grid->refund_no('Refund no');
-        // $grid->closed('Closed');
-        // $grid->reviewed('Reviewed');
-        // $grid->ship_data('Ship data');
-        // $grid->extra('Extra');
-        // $grid->created_at('Created at');
-        // $grid->updated_at('Updated at');
-
         return $grid;
     }
 
@@ -219,5 +206,29 @@ class OrdersController extends Controller
         $form->textarea('extra', 'Extra');
 
         return $form;
+    }
+
+    // 处理退款申请
+    public function handleRefund(HandleRefundRequest $request, Order $order)
+    {
+        // 1 判断订单状态是否是 以申请退款
+        if($order->refund_status !== Order::REFUND_STATUS_APPLIED){
+            throw new InvalidRequestException('订单状态不正确');
+        }
+        // 2 判断我们运营人员是否同意退款
+        if($request->agree){
+            // 2.1 同意退款
+        }else{
+            // 2.2 将拒绝退款理由存入orders表的 extra 字段中
+            $extra = $order->extra ?: [];
+            $extra['refund_disagree_reason'] = $request->reason;
+            // 2.3 将订单退款状态改为 不同意退款（未退款）
+            $order->update([
+                'refund_status' => Order::REFUND_STATUS_PENDING,
+                'extra' => $extra
+            ]);
+        }
+
+        return $order;
     }
 }

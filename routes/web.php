@@ -29,8 +29,9 @@ Route::group(['middleware'=>'auth'], function(){
         Route::delete('product/{product}/disfavorite', 'ProductController@disfavorite')->name('product.disfavorite');   // 取消收藏
         Route::get('product/favorites/list', 'ProductController@favorites')->name('product.favorites'); // 收藏列表
         Route::resource('cart', 'CartController');
-        Route::get('order/{order}/review', 'OrderController@review')->name('order.review.show');
-        Route::post('order/{order}/review', 'OrderController@sendReview')->name('order.review.store');
+        Route::post('order/{order}/apply_refund', 'OrderController@applyRefund')->name('order.apply_refund');
+        Route::get('order/{order}/review', 'OrderController@review')->name('order.review.show');    // 评价页面
+        Route::post('order/{order}/review', 'OrderController@sendReview')->name('order.review.store');  // 评价
         Route::post('order/{order}/received', 'OrderController@received')->name('order.received');//确认收获
         Route::resource('order', 'OrderController');
         Route::get('payment/{order}/alipay', 'PaymentController@payByAlipay')->name('payment.alipay');  //使用支付宝付款
