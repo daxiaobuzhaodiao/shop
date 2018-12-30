@@ -6,8 +6,8 @@
 <div class="row">
     <div class="col-lg-10 mx-auto">
     <div class="card card-default">
-      <div class="card-header text-center">
-        <span class="float-left">订单详情</span>
+      <div class="card-body text-center">
+        <span class="float-left"><h5>订单详情</h5></span>
         <a class="float-right" href="{{ route('order.index') }}">返回订单列表</a>
       </div>
       <div class="card-body">

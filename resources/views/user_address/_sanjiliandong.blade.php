@@ -1,15 +1,15 @@
 <div class="input-group mb-3 pr-5">
     <label class="my-1 col-2 text-right">省市区</label>
     <select class="custom-select mr-3" v-model="provinceId">
-        <option selected>--省--</option>
+        <option value="">--选择省--</option>
         <option v-for="(name, id) in provinces" :value="id">@{{ name }}</option>
     </select>
     <select class="custom-select mr-3" v-model="cityId">
-        <option selected>--市--</option>
+        <option value="">--选择市--</option>
         <option v-for="(name, id) in cities" :value="id">@{{ name }}</option>
     </select>
     <select class="custom-select mr-5" v-model="districtId">
-        <option selected>--区/县--</option>
+        <option value="">--选择区/县--</option>
         <option v-for="(name, id) in districts" :value="id">@{{ name }}</option>
     </select>
 </div>
@@ -34,7 +34,7 @@
         {!! Form::text('contact_phone', null, ['class'=>'form-control mr-5']) !!}
     </div>
     <div class="input-group">
-        {!! Form::submit(isset($address)?'修改':'添加', ['class'=>'mx-auto btn btn-info']) !!}
+        {!! Form::submit(isset($address)?'修改':'添加', ['class'=>'mx-auto btn btn-primary']) !!}
     </div>
 </div>
 <!-- 插入了 3 个隐藏的字段 -->

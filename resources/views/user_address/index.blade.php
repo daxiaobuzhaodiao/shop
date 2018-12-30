@@ -1,8 +1,8 @@
 @extends('layouts.app')
 @section('title', '收货地址')
 @section('content')
-    <div class="card">
-        <div class="card-header">
+    <div class="card mx-auto">
+        <div class="card-body">
             <span class="pull-left">收获地址列表</span>
             <a class="float-right" href="{{ route('user_address.create') }}">新增收货地址</a>
         </div>

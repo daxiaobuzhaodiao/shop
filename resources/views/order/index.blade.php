@@ -5,7 +5,7 @@
 <div class="row">
 <div class="col-lg-10 mx-auto">
 <div class="card card-default">
-  <div class="card-header text-center"><h4>订单列表</h4></div>
+  <div class="card-body text-center"><h5>订单列表</h5></div>
   <div class="card-body">
     <ul class="list-group">
       @foreach($orders as $order)

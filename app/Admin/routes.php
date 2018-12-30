@@ -33,5 +33,12 @@ Route::group([
     $router->get('orders/{order}', 'OrdersController@show')->name('admin.orders.show'); // 订单详情
     $router->post('orders/{order}/ship', 'OrdersController@ship')->name('admin.orders.ship');   // 发货
     $router->post('orders/{order}/refund', 'OrdersController@handleRefund')->name('admin.orders.handle_refund'); // 处理退款申请
-    $router->get('coupons', 'CouponCodesController@index');
+    $router->get('coupons', 'CouponCodesController@index')->name('coupons.index');
+
+    $router->resource('coupons', 'CouponCodesController');
+    // $router->get('coupons/create', 'CouponCodesController@create')->name('coupons.create');
+    // $router->post('coupons', 'CouponCodesController@store')->name('coupons.store');
+    // $router->get('coupons/{coupons}/edit', 'CouponCodesController@edit')->name('coupons.edit');
+    // $router->put('coupons/{coupons}', 'CouponCodesController@update')->name('coupons.update');
+    // $router->delete('coupons/{coupons}', 'CouponCodesController@destroy')->name('coupons.destroy');
 });

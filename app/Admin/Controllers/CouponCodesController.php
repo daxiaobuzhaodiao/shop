@@ -38,7 +38,7 @@ class CouponCodesController extends Controller
     public function edit($id, Content $content)
     {
         return $content
-            ->header('Edit')
+            ->header('编辑优惠券')
             ->description('description')
             ->body($this->form()->edit($id));
     }
@@ -52,7 +52,7 @@ class CouponCodesController extends Controller
     public function create(Content $content)
     {
         return $content
-            ->header('Create')
+            ->header('新建优惠券')
             ->description('description')
             ->body($this->form());
     }
@@ -66,35 +66,30 @@ class CouponCodesController extends Controller
     {
         $grid = new Grid(new CouponCode);
 
-        $grid->model()->orderBy('created_at', 'desc'); // 默认创建时间倒序排序
-        $grid->id('ID')->sortable();    // 切换排序
+        // 默认按创建时间倒序排序
+        $grid->model()->orderBy('created_at', 'desc');
+        $grid->id('ID')->sortable();
         $grid->name('名称');
         $grid->code('优惠码');
-        $grid->description('描述');
-        $grid->type('类型')->sortable()->display(function ($value){
+        $grid->type('类型')->sortable()->display(function($value) {
             return CouponCode::$typeMap[$value];
         });
         // 根据不同的折扣类型用对应的方式来展示
-        $grid->value('折扣')->display(function ($value) {
+        $grid->value('折扣')->sortable()->display(function($value) {
             return $this->type === CouponCode::TYPE_FIXED ? '￥'.$value : $value.'%';
         });
-        // $grid->column('usage', '用量') 是我们虚拟出来的一个字段，然后通过 display() 来输出这个虚拟字段的内容
-        $grid->column('usage', '用量')->display(function ($value) {
-            return "{$this->used} / {$this->total}";
-        });
-        $grid->enabled('是否启用')->display(function ($value) {
+        $grid->min_amount('最低金额');
+        $grid->total('总量');
+        $grid->used('已用');
+        $grid->enabled('是否启用')->display(function($value) {
             return $value ? '是' : '否';
         });
         $grid->created_at('创建时间');
+
         $grid->actions(function ($actions) {
             $actions->disableView();
         });
-        // $grid->total('总量');
-        // $grid->used('已用');
-        // $grid->min_amount('最低消费');
-        // $grid->not_before('之前有效');
-        // $grid->not_after('之后有效');
-        // $grid->updated_at('Updated at');
+
         return $grid;
     }
 
@@ -107,16 +102,39 @@ class CouponCodesController extends Controller
     {
         $form = new Form(new CouponCode);
 
-        $form->text('name', 'Name');
-        $form->text('code', 'Code');
-        $form->text('type', 'Type');
-        $form->text('value', 'Value');
-        $form->number('total', 'Total');
-        $form->number('used', 'Used');
-        $form->decimal('min_amount', 'Min amount');
-        $form->datetime('not_before', 'Not before')->default(date('Y-m-d H:i:s'));
-        $form->datetime('not_after', 'Not after')->default(date('Y-m-d H:i:s'));
-        $form->switch('enabled', 'Enabled');
+        $form->display('id', 'ID');
+        $form->text('name', '名称')->rules('required');
+        $form->text('code', '号码')->rules(function ($form) {
+            // 如果 $form->model()->id 不为空，代表是编辑操作
+            if($id = $form->model()->id){
+                // 排除自身
+                return 'nullable|unique:coupon_codes,code,'.$id.',id';
+            }else{
+                return 'nullable|unique:coupon_codes';
+            }
+        }); //可以为空 如果有值则一定是唯一的
+        $form->radio('type', '类型')->options(CouponCode::$typeMap)->rules('required'); // $type 是一个数组
+        $form->text('value', '折扣')->rules(function ($form) {
+            if ($form->model()->type === CouponCode::TYPE_PERCENT) {
+                // 如果随机选择了百分比折扣类型，那么折扣范围只能是 1 ~ 99
+                return 'required|numeric|between:1,99';
+            } else {
+                // 否则只要大等于 0.01 即可
+                return 'required|numeric|min:0.01';
+            }
+        });
+        $form->text('total', '总量')->rules('required|numeric|min:0');
+        $form->text('min_amount', '最低金额')->rules('required|numeric|min:0');
+        $form->datetime('not_before', '开始时间');
+        $form->datetime('not_after', '结束时间');
+        $form->radio('enabled', '启用')->options(['1' => '是', '0' => '否']);
+
+        // $form->saving() 方法用来注册一个事件处理器，在表单的数据被保存前会被触发，这里我们判断如果用户没有输入优惠码，就通过 findAvailableCode() 来自动生成
+        $form->saving(function (Form $form) {
+            if (!$form->code) {
+                $form->code = CouponCode::findAvailableCode();
+            }
+        });
 
         return $form;
     }

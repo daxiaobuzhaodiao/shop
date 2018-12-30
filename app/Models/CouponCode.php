@@ -8,13 +8,14 @@ use Illuminate\Support\Str;
 class CouponCode extends Model
 {
     // 用常量的方式定义支持的优惠券类型
-    const TYPE_FIXED = 'fixed'; // 表示固定金额
-    const TYPE_PERCENT = 'percent'; // 表示比例
+    const TYPE_FIXED = 'fixed';
+    const TYPE_PERCENT = 'percent';
 
     public static $typeMap = [
-        self::TYPE_FIXED   => '固定金额',
+        self::TYPE_FIXED   => '金额',
         self::TYPE_PERCENT => '比例',
     ];
+
     protected $fillable = [
         'name',
         'code',

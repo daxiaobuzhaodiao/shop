@@ -3,7 +3,7 @@
 
 @section('content')
 <div class="row">
-<div class="col-lg-10 m-auto">
+<div class="col-8 m-auto">
 <div class="card card-default">
   <div class="card-body product-info">
     <div class="row">
@@ -119,13 +119,14 @@
                   console.log(err.response.data);
                   if(err.response.status == 401){
                     Swal('', '请先登录', 'warning');
-                  }else if(err.response.data.msg){
-                    Swal('', err.response.data.msg, 'warning')// 验证邮箱的中间件 返回msg错误信息
+                  }else if(err.response.status === 403){
+                    // console.log(err.response);
+                    Swal('', '请验证邮箱后再试~~', 'warning')
                       .then(()=>{
-                        location.href = '/email_verification/send';
+                        location.href = '/email/verify';
                       })  
                   }else{
-                    Swal('','未知错误，请稍后再试', 'warning')
+                    Swal('', '未知错误，请联系客服', 'error');
                   }
                 })
             })
@@ -166,13 +167,13 @@
                     type: 'error',
                     title: html,
                   })
-                }else if(err.response.status == 400){
-                  Swal('', err.response.data.msg, 'warning')
+                }else if(err.response.status == 403){
+                  Swal('', '请验证邮箱后再试', 'warning')
                     .then(()=>{
-                      location.href = '/email_verification/send';
+                      location.href = '/email/verify';
                     });
                 }else{
-                  Swal('', '系统错误，请联系客服', 'warning');
+                  Swal('', '系统错误，请联系客服', 'error');
                 }
               })
             })

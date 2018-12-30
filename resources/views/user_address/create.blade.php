@@ -2,8 +2,8 @@
 @section('title', '添加收货地址')
 
 @section('content')
-    <div class="card mb-3 mx-auto" style="width:50rem">
-        <div class="card-header text-center"><h3>添加收货地址</h3></div>
+    <div class="col-10 card mx-auto">
+        <div class="card-body text-center"><h5>添加收货地址</h5></div>
         <div class="card-body">
             <!-- 输出后端报错开始 -->
             @include('user_address._error')
