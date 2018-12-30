@@ -6,14 +6,20 @@ use Illuminate\Support\Carbon;
 use App\Models\ProductSku;
 use App\Exceptions\InvalidRequestException;
 use App\Jobs\CloseOrder;
+use App\Models\CouponCode;
+use App\Exceptions\CouponCodeUnavailableException;
 
 
 class OrderService{
-    public function store($user, $address, $remark, $items)
+    public function store($user, $address, $remark, $items, $coupon = null)
     {
-        // dd($items);
+
+        // 判断如果优惠券有值 则先检测优惠券是否可用   ($coupon 如果有值就是coupon对象)
+        if($coupon){
+            $coupon->checkAvailable();
+        }
         // 1 开启事务
-        $order = \DB::transaction(function () use($user, $address, $remark, $items){
+        $order = \DB::transaction(function () use($user, $address, $remark, $items, $coupon){
             // 1 更新 user_address 的 last_used_at 字段
             $address->update(['last_used_at', Carbon::now()]);
 
@@ -53,6 +59,18 @@ class OrderService{
                 // 计算总金额
                 $total += $productSku->price * $item['amount'];
             };
+            // 获取到了金额， 检查金额是否符合最低消费
+            if($coupon){
+                $coupon->checkAvailable($total);
+                //修改金额
+                $total = $coupon->getAdjustedPrice($total);
+                // 将订单与优惠券关联起来
+                $order->coupon()->associate($coupon);
+                // 增加优惠券的用量
+                if($coupon->changeUsed() <= 0){
+                    throw new CouponCodeUnavailableException('抱歉，该优惠券已被兑换完');
+                }
+            }
             // 5 更新总金额
             $order->update(['total_amount'=>$total]);
             // 6 将下单的产品从购物车中移除 （CartService）

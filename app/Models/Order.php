@@ -80,7 +80,7 @@ class Order extends Model
     // 关联优惠券
     public function coupon()
     {
-        return $this->belongsTo('App\Models\CouponCode');    
+        return $this->belongsTo('App\Models\CouponCode', 'coupon_code_id');    
     }
 
     // 创建订单号

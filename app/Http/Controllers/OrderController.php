@@ -11,6 +11,8 @@ use App\Exceptions\InvalidRequestException;
 use Illuminate\Support\Carbon;
 use App\Http\Requests\SendReviewRequest;
 use App\Events\OrderReviewed;
+use App\Models\CouponCode;
+use App\Exceptions\CouponCodeUnavailableException;
 
 class OrderController extends Controller
 {
@@ -26,8 +28,17 @@ class OrderController extends Controller
     // 增 
     public function store(OrderRequest $request, OrderService $orderService)
     {
+        $coupon = null;
         $address = UserAddress::findOrFail($request->address_id);
-        $order = $orderService->store($request->user(), $address, $request->remark, $request->items);
+        // 如果用户提交了优惠券
+        if($code = $request->code){
+            $coupon = CouponCode::where('code', $code)->first();
+            if(!$coupon){
+                throw new CouponCodeUnavailableException('该优惠券不存在');
+            }
+        }
+        // dd($coupon);
+        $order = $orderService->store($request->user(), $address, $request->remark, $request->items, $coupon);
         return $order;
     }
 

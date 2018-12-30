@@ -139,7 +139,8 @@
               var req = {
                 address_id: $('#order-form').find('select[name=address]').val(),  // 收货地址
                 remark: $('#order-form').find('textarea[name=remark]').val(), // 备注
-                items: [],      // sku_id 和 amount
+                items: [],// sku_id 和 amount
+                code: $('input[name=coupon_code]').val()  // 优惠码
               };
 
               // 获得参数中的 items[] 这个数组的数据
@@ -180,6 +181,8 @@
                       type: 'error',
                       title: html,
                     })
+                  }else if(err.response.status === 403){
+                    Swal('', err.response.data.msg, 'error');
                   }else{
                     Swal('', '系统错误，请联系客服', 'warning')
                   }
@@ -204,7 +207,7 @@
               }).catch((err)=>{
                 if(err.response.status == 404){
                   Swal('', '优惠码不存在', 'error')
-                }else if(err.response.status === 401){
+                }else if(err.response.status === 403){
                   Swal('', err.response.data.msg, 'error')
                 }else{
                   Swal('', '系统错误，请联系客服', 'error')
