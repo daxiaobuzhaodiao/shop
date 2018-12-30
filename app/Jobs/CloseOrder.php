@@ -18,7 +18,7 @@ class CloseOrder implements ShouldQueue
     public function __construct(Order $order, $delay)
     {
         $this->order = $order;
-        $this->delay($delay);   // delay这个方法（）是哪儿来的
+        $this->delay($delay);
     }
 
     public function handle()
@@ -35,6 +35,9 @@ class CloseOrder implements ShouldQueue
             // 循环遍历订单的sku 将订单的中的数量加回到sku的库存中
             foreach($this->order->items as $item){
                 $item->productSku->addStock($item->amount);
+            }
+            if($this->order->coupon){
+                $this->order->coupon->changeUsed(false);
             }
         });
     }

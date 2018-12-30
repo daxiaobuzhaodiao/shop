@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use App\Exceptions\CouponCodeUnavailableException;
 use Illuminate\Support\Carbon;
+use App\Models\Order;
 
 class CouponCode extends Model
 {
@@ -71,7 +72,7 @@ class CouponCode extends Model
     // 这个 checkAvailable() 方法接受一个参数 $orderAmount 订单金额。
     // 只是检查其有效性时 不需要传参
     // 在下单时需要传入当前订单的总金额 检查该券是否符合规定的最低消费金额
-    public function checkAvailable($orderAmount = null)
+    public function checkAvailable(User $user, $orderAmount = null)
     {
         if(!$this->enabled){
             throw new CouponCodeUnavailableException('优惠券不存在');
@@ -87,6 +88,22 @@ class CouponCode extends Model
         }
         if(!is_null($orderAmount) && $orderAmount < $this->min_amount){
             throw new CouponCodeUnavailableException('订单金额不满足该优惠券的最低金额');
+        }
+        // 这里我们对 [使用] 的定义是：有关联了此优惠券的未付款且未关闭订单 或者 已付款且未退款成功订单
+        $used = Order::where('user_id', $user->id)
+            ->where('coupon_code_id', $this->id)
+            ->where(function($query) {
+                $query->where(function($query) {
+                    $query->whereNull('paid_at')
+                        ->where('closed', false);
+                })->orWhere(function($query) {
+                    $query->whereNotNull('paid_at')
+                        ->where('refund_status', '!=', Order::REFUND_STATUS_SUCCESS);
+                });
+            })
+            ->exists();
+        if ($used) {
+            throw new CouponCodeUnavailableException('你已经使用过这张优惠券了');
         }
     }
 

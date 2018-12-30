@@ -16,7 +16,7 @@ class CouponController extends Controller
             // abort(404); //abort() 方法可以直接中断我们程序的运行，接受的参数会变成 Http 状态码返回 (不用他)
             throw new CouponCodeUnavailableException('优惠券不存在');
         }
-        $record->checkAvailable();
+        $record->checkAvailable(auth()->user());
         return $record;
     }
 }

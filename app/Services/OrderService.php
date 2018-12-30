@@ -16,7 +16,7 @@ class OrderService{
 
         // 判断如果优惠券有值 则先检测优惠券是否可用   ($coupon 如果有值就是coupon对象)
         if($coupon){
-            $coupon->checkAvailable();
+            $coupon->checkAvailable($user);
         }
         // 1 开启事务
         $order = \DB::transaction(function () use($user, $address, $remark, $items, $coupon){
@@ -61,7 +61,7 @@ class OrderService{
             };
             // 获取到了金额， 检查金额是否符合最低消费
             if($coupon){
-                $coupon->checkAvailable($total);
+                $coupon->checkAvailable($user, $total);
                 //修改金额
                 $total = $coupon->getAdjustedPrice($total);
                 // 将订单与优惠券关联起来
