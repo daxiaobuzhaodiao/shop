@@ -58,8 +58,8 @@ class UsersController extends Controller
         $grid->email('邮箱');
         $grid->disableCreateButton();    // 不在页面显示 `新建` 按钮，因为我们不需要在后台新建用户
         $grid->created_at('注册时间');
-        $grid->email_verified('Email verified')->display(function ($value){
-            return $value? '是' : '否';
+        $grid->email_verified_at('验证邮箱')->display(function ($value){
+            return $value ? '是' : '否';
         });
         $grid->tools(function ($tools) {
             // 禁用批量删除按钮

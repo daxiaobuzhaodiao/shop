@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\Models\CouponCode;
+use App\Models\User;
 
-class CouponCodeSeeder extends Seeder
+class UserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -13,9 +13,8 @@ class CouponCodeSeeder extends Seeder
     public function run()
     {
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
-        CouponCode::truncate();
+        User::truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
-
-        factory(CouponCode::class, 20)->create();
+        factory(User::class, 100)->create(); //创建100个用户
     }
 }

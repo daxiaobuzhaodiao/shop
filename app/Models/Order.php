@@ -122,6 +122,7 @@ class Order extends Model
         return false;
     }
 
+    // 制作退款单号
     // 在申请退款的时候都需要我们提交一个唯一字符串作为退款订单号，之后可以通过退款订单号来查询退款进度，退款的回调也会带上退款订单号
     public static function getAvailableRefundNo()
     {
