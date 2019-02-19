@@ -36,11 +36,6 @@ class CartController extends Controller
        
         $this->cartService->destroy($productSku);
         return [];
-
-        // 这个方法报错     No query results for model [App\Models\Cart] 7
-        // $cart = Cart::findOrFail($productSku);
-        // $cart->delete($skuId);
     }
-
    
 }
